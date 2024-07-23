@@ -5,7 +5,15 @@
 @section('content')
 <div class="container-fluid pt-4 px-4">
     <h2 class="mb-4">Data Simpanan</h2>
-
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
     <!-- Alert Success -->
     @if(Session::has('message'))
     <div id="successAlert" class="alert alert-success alert-dismissible fade show custom-alert" role="alert">
@@ -27,7 +35,14 @@
     <div class="bg-light rounded h-100 p-4">
         <div class="table-responsive">
             <div class="mb-3 d-flex justify-content-between">
-                <a href="{{ route('simpanan.create') }}" class="btn btn-outline-primary rounded-pill m-3"><i class="fas fa-dollar-sign"></i> Tambah</a>
+                <button type="button" class="btn btn-outline-primary rounded-pill m-3" data-bs-toggle="modal" data-bs-target="#buatSimpanan">
+                    <i class="fas fa-dollar-sign"></i> Tambah
+                </button>
+
+                @include('backend.simpanan.modal.modalCreate')
+
+
+                <!-- <a href="{{ route('simpanan.create') }}" class="btn btn-outline-primary rounded-pill m-3"><i class="fas fa-dollar-sign"></i> Tambah</a> -->
 
                 <!-- Form Laporan Tanggal -->
                 <div class="d-flex align-items-center ms-2">

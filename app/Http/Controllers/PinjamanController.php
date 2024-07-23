@@ -43,8 +43,8 @@ class PinjamanController extends Controller
             });
         }
 
-        $pinjaman = $pinjamanQuery->paginate(5);
 
+        $pinjaman = $pinjamanQuery->orderBy('pinjaman.id', 'DESC')->paginate(5);
         // Calculate total saldo and maxPinjamanBaru
         $totalSaldo = DB::table('_anggota')->sum('saldo');
         $maxPinjaman = $totalSaldo * 0.9;
@@ -56,6 +56,7 @@ class PinjamanController extends Controller
 
         return view('backend.pinjaman.index', compact('pinjaman', 'maxPinjamanBaru', 'anggota', 'kodeTransaksiPinjaman'));
     }
+
 
 
     public function create()
@@ -152,7 +153,33 @@ class PinjamanController extends Controller
         return redirect()->route('pinjaman')->with('success', 'Pinjaman berhasil ditambahkan.');
     }
 
+    public function update(Request $request, $id)
+    {
+        // Validasi data input
+        $request->validate([
+            'jml_pinjam' => 'required|numeric',
+            'jml_cicilan' => 'required|numeric',
+            'jatuh_tempo' => 'required|date'
+        ]);
+        // Fetch the current pinjaman record to check status_pengajuan
+        $pinjaman = DB::table('pinjaman')->where('id', $id)->first();
+        if ($pinjaman && $pinjaman->status_pengajuan != 0) {
+            return redirect()->route('pinjaman')->with('error', 'tidak bisa update pinjaman karena status tidak valid');
+        }
+        // Update data pinjaman menggunakan Query Builder
+        DB::table('pinjaman')
+            ->where('id', $id)
+            ->update([
+                'jml_pinjam' => $request->input('jml_pinjam'),
+                'jml_cicilan' => $request->input('jml_cicilan'),
+                'jatuh_tempo' => $request->input('jatuh_tempo'),
+                'updated_at' => now(),
+                'updated_by' => auth()->id(),
+            ]);
 
+        // Redirect ke halaman sebelumnya dengan pesan sukses
+        return redirect()->route('pinjaman')->with('success', 'Pinjaman updated successfully.');
+    }
 
     public function terimapengajuan($id)
     {
@@ -225,6 +252,7 @@ class PinjamanController extends Controller
         // Ambil daftar angsuran terkait pinjaman menggunakan Query Builder
         $angsuran = DB::table('angsuran')
             ->select(
+            'angsuran.id as angsuran_id',
                 'angsuran.kodeTransaksiAngsuran',
                 'angsuran.tanggal_angsuran',
                 'angsuran.jml_angsuran',
@@ -233,7 +261,7 @@ class PinjamanController extends Controller
                 'angsuran.status',
                 'angsuran.keterangan',
                 'angsuran.bukti_pembayaran',
-            'angsuran.bunga_pinjaman',
+                'angsuran.bunga_pinjaman',
                 DB::raw('(angsuran.jml_angsuran + angsuran.bunga_pinjaman) as total_angsuran_dengan_bunga'),
                 'users.name as created_by_name'
             )

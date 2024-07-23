@@ -30,6 +30,7 @@ class PermissionTableSeeder extends Seeder
             'simpanan-create',
             'simpanan-edit',
             'simpanan-delete',
+            'simpanan-detail',
 
             'penarikan-list',
             'penarikan-create',
@@ -40,10 +41,17 @@ class PermissionTableSeeder extends Seeder
             'pinjaman-create',
             'pinjaman-edit',
             'pinjaman-delete',
+            'pinjaman-detail',
 
             'laporan_list',
-            'laporan_cetak',
-            'laporan_download',
+            'laporan_simpanan',
+            'laporan_pinjaman',
+            'laporan_angsuran',
+            'laporan_penarikan',
+
+            'angsuran-create',
+            'angsuran-edit',
+            'angsuran-delete',
 
             'approve_penarikan',
             'approve_pinjaman',

@@ -3,6 +3,16 @@
 @section('content')
 <div class="container-fluid pt-4 px-4">
     <h2 class="mb-4">Data Nasabah</h2>
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <!-- Alert Success -->
     @if(Session::has('message'))
     <div id="successAlert" class="alert alert-success alert-dismissible fade show custom-alert" role="alert">
@@ -30,8 +40,13 @@
                         <thead>
                             <div class=" mb-3">
 
-                                <a href="{{route('createNasabah')}}" class="btn btn-outline-primary rounded-pill m-2"><i class="fas fa-user-plus"> </i>  Tambah </a>
+                                <!-- <a href="{{route('createNasabah')}}" class="btn btn-outline-primary rounded-pill m-2"><i class="fas fa-user-plus"> </i> Tambah </a> -->
+                                <!-- Button to Open the Modal -->
+                                <button type="button" class="btn btn-outline-primary rounded-pill m-3" data-bs-toggle="modal" data-bs-target="#buatAnggota">
+                                    <i class="fas fa-user-plus"></i> Tambah
+                                </button>
 
+                                @include('backend.nasabah.modal.modalCreate')
                             </div>
                             <tr>
                                 <th scope="col">#</th>

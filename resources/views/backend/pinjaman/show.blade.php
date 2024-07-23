@@ -164,6 +164,43 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Modal Edit Angsuran -->
+                <div class="modal fade" id="editAngsuran" tabindex="-1" aria-labelledby="editAngsuranLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="editAngsuranLabel">Edit Angsuran</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="POST" action="" class="form-edit-angsuran" enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="edit_jml_angsuran">Jumlah Angsuran:</label>
+                                        <input type="number" class="form-control" id="edit_jml_angsuran" name="jml_angsuran" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_bunga_pinjaman">Bunga Angsuran 2%:</label>
+                                        <input type="number" class="form-control" id="edit_bunga_pinjaman" name="bunga_pinjaman" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_bukti_pembayaran">Bukti Pembayaran:</label>
+                                        <input type="file" class="form-control" id="edit_bukti_pembayaran" name="bukti_pembayaran">
+                                        <img id="edit_image_preview" src="#" alt="Image Preview" style="display: none; max-width: 50%; height: auto; margin-top: 10px;">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-success">Simpan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </div>
 
@@ -192,6 +229,7 @@
                             <th>Cicilan Ke-</th>
                             <th>Status</th>
                             <th>Total Angsuran</th>
+                            <th>Action</th>
 
                         </tr>
                     </thead>
@@ -211,6 +249,20 @@
                                 @endif
                             </td>
                             <td>Rp {{ number_format($ang->total_angsuran_dengan_bunga, 0, ',', '.') }}</td>
+                            <td>
+                                <!-- Edit Button -->
+                                <button type="button" class="btn btn-outline-warning btn-sm m-1" data-bs-toggle="modal" data-bs-target="#editAngsuran" data-id="{{ $ang->angsuran_id }}" data-jml_angsuran="{{ $ang->jml_angsuran }}" data-bunga_pinjaman="{{ $ang->bunga_pinjaman }}" data-bukti_pembayaran="{{ $ang->bukti_pembayaran }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                                <form action="{{ route('angsuran.destroy', $ang->angsuran_id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
 
                         @endforeach
@@ -288,4 +340,46 @@
         });
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var editAngsuranModal = document.getElementById('editAngsuran');
+
+            editAngsuranModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget;
+                var id = button.getAttribute('data-id');
+                var jmlAngsuran = button.getAttribute('data-jml_angsuran');
+                var bungaPinjaman = button.getAttribute('data-bunga_pinjaman');
+                var buktiPembayaran = button.getAttribute('data-bukti_pembayaran');
+                var formEdit = editAngsuranModal.querySelector('.form-edit-angsuran');
+
+                formEdit.setAttribute('action', `/angsuran/${id}`);
+                formEdit.querySelector('#edit_jml_angsuran').value = jmlAngsuran;
+                formEdit.querySelector('#edit_bunga_pinjaman').value = bungaPinjaman;
+
+                if (buktiPembayaran) {
+                    var imagePreview = editAngsuranModal.querySelector('#edit_image_preview');
+                    imagePreview.src = buktiPembayaran;
+                    imagePreview.style.display = 'block';
+                } else {
+                    editAngsuranModal.querySelector('#edit_image_preview').style.display = 'none';
+                }
+
+                formEdit.querySelector('#edit_jml_angsuran').addEventListener('input', function() {
+                    var jmlAngsuranValue = parseFloat(this.value);
+                    var bungaPinjamanValue = jmlAngsuranValue * 0.02; // 2% bunga
+                    formEdit.querySelector('#edit_bunga_pinjaman').value = bungaPinjamanValue.toFixed(2);
+                });
+            });
+
+            document.getElementById('edit_bukti_pembayaran').addEventListener('change', function(event) {
+                var reader = new FileReader();
+                reader.onload = function() {
+                    var output = document.getElementById('edit_image_preview');
+                    output.src = reader.result;
+                    output.style.display = 'block';
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            });
+        });
+    </script>
     @endsection

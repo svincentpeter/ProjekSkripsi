@@ -47,7 +47,7 @@ class NasabahController extends Controller
 
         try {
             // Create a new user
-            $user = User::insertGetId([
+            $user = User::create([
                 'name' => $request->nama,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
@@ -60,7 +60,7 @@ class NasabahController extends Controller
             $statusAnggota = $saldo == 0 ? 0 : 1; // Set to non-aktif if saldo is 0
 
             // Create a new nasabah related to the user
-            DB::table('_anggota')->insertGetId([
+            DB::table('_anggota')->insert([
                 'name' => $request->nama,
                 'telphone' => $request->telphone,
                 'nip' => $request->nip,
@@ -73,7 +73,7 @@ class NasabahController extends Controller
                 'status_anggota' => $statusAnggota,
                 'saldo' => $saldo,
                 'tgl_gabung' => $request->tgl_gabung,
-                'user_id' => $user,
+                'user_id' => $user->id,
                 'created_by' => Auth::id(),
                 'updated_by' => Auth::id(),
                 'created_at' => now(),

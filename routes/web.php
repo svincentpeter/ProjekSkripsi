@@ -14,8 +14,8 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
     //home
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home'); 
+    Route::get('/chart-data', [App\Http\Controllers\HomeController::class, 'chartData'])->name('chart.data');
     //user
     Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('user');
     Route::get('/adduser', [\App\Http\Controllers\UserController::class, 'create'])->name('createUser');
@@ -51,7 +51,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/pinjaman/store', [\App\Http\Controllers\PinjamanController::class, 'store'])->name('pinjaman.store');
     Route::get('/detail_pinjaman/{id}', [\App\Http\Controllers\PinjamanController::class, 'show'])->name('pinjaman.show');
     // Route::get('/editpinjaman/{id}/edit', [\App\Http\Controllers\PinjamanController::class, 'edit'])->name('pinjaman.edit');
-    // Route::put('/updatepinjaman/{id}', [\App\Http\Controllers\PinjamanController::class, 'update'])->name('pinjaman.update');
+    Route::put('/pinjaman/{id}', [\App\Http\Controllers\PinjamanController::class, 'update'])->name('pinjaman.update');
+
     Route::delete('/pinjaman/{id}', [\App\Http\Controllers\PinjamanController::class, 'destroy'])->name('pinjaman.destroy');
     Route::get('/terima_pengajuan/{id}', [\App\Http\Controllers\PinjamanController::class, 'terimapengajuan'])->name('terima_pengajuan');
     Route::post('/tolak_pengajuan/{id}', [\App\Http\Controllers\PinjamanController::class, 'tolakPengajuan'])->name('tolak_pengajuan');
@@ -74,13 +75,15 @@ Route::middleware('auth')->group(function () {
     
     //angsuran
     Route::post('/pinjaman/{pinjaman_id}/angsuran', [\App\Http\Controllers\AngsuranController::class, 'bayarAngsuran'])->name('angsuran.bayar');
+    // routes/web.php
+    Route::put('/angsuran/{id}', [\App\Http\Controllers\AngsuranController::class, 'update'])->name('angsuran.update');
 
     //angsuran
     Route::get('/angsuran', [\App\Http\Controllers\AngsuranController::class, 'index'])->name('angsuran');
     Route::get('/angsuran/create', [\App\Http\Controllers\AngsuranController::class, 'create'])->name('angsuran.create');
     Route::post('/angsuran/store', [\App\Http\Controllers\AngsuranController::class, 'store'])->name('angsuran.store');
     Route::get('/editangsuran/{id}/edit', [\App\Http\Controllers\AngsuranController::class, 'edit'])->name('angsuran.edit');
-    Route::put('/updateangsuran/{id}', [\App\Http\Controllers\AngsuranController::class, 'update'])->name('angsuran.update');
+    // Route::put('/updateangsuran/{id}', [\App\Http\Controllers\AngsuranController::class, 'update'])->name('angsuran.update');
     Route::get('/angsuran/cetak', [\App\Http\Controllers\AngsuranController::class, 'cetak'])->name('angsuran.cetak');
     Route::delete('/angsuran/{id}', [\App\Http\Controllers\AngsuranController::class, 'destroy'])->name('angsuran.destroy');
 
@@ -90,7 +93,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/penarikan/store', [\App\Http\Controllers\PenarikanController::class, 'store'])->name('penarikan.store');
     Route::get('/detail_penarikan/{id}', [\App\Http\Controllers\PenarikanController::class, 'show'])->name('penarikan.show');
     Route::get('/editPenarikan/{id}/edit', [\App\Http\Controllers\PenarikanController::class, 'edit'])->name('penarikan.edit');
-
+    Route::put('/penarikan/{id}', [\App\Http\Controllers\PenarikanController::class, 'update'])->name('penarikan.update');
     Route::delete('/penarikan/{id}', [\App\Http\Controllers\PenarikanController::class, 'destroy'])->name('penarikan.destroy');
 
 

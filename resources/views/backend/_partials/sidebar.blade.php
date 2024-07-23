@@ -16,13 +16,22 @@
              </div>
          </div>
          <div class="navbar-nav w-100">
-             <a href="{{route('home')}}" class="nav-item nav-link {{ (request()->is('home*')) ? 'active' : '' }}"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+             <a href="{{route('home')}}" class="nav-item nav-link {{ (request()->is('home*')) ? 'active' : '' }}"><i class="fa fa-home me-2"></i>Dashboard</a>
              <a href="{{route('user')}}" class="nav-item nav-link {{ (request()->is('user*')) ? 'active' : '' }}"><i class="fa fa-user me-2"></i>User</a>
+             @can('nasabah-list')
              <a href="{{route('nasabah')}}" class="nav-item nav-link {{ (request()->is('nasabah*')) ? 'active' : '' }}"><i class="fa fa-user-friends me-2"></i>Nasabah</a>
+             @endcan
+             @can('simpanan-list')
              <a href="{{route('simpanan')}}" class="nav-item nav-link {{ (request()->is('simpanan*')) ? 'active' : '' }}"><i class="far fa-money-bill-alt me-2"></i>Simpanan</a>
+             @endcan
+             @can('pinjaman-list')
              <a href="{{route('pinjaman')}}" class="nav-item nav-link {{ (request()->is('pinjaman*')) ? 'active' : '' }}"><i class=" far fa-money-bill-alt me-2"></i>Pinjaman</a>
+             @endcan
+             @can('penarikan-list')
              <a href="{{route('penarikan')}}" class="nav-item nav-link {{ (request()->is('penarikan*')) ? 'active' : '' }}"><i class=" far fa-money-bill-alt me-2"></i>Penarikan</a>
+             @endcan
              <!-- <a href="{{route('angsuran')}}" class="nav-item nav-link {{ (request()->is('angsuran*')) ? 'active' : '' }}"><i class=" far fa-money-bill-alt me-2"></i>Angsuran</a> -->
+             @can('laporan_list')
              <div class="nav-item dropdown">
                  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Laporan</a>
                  <div class="dropdown-menu bg-transparent border-0">
@@ -31,7 +40,10 @@
                      <a href="{{route('laporanPenarikan')}}" class="dropdown-item">Laporan Penarikan</a>
                  </div>
              </div>
+             @endcan
+             @can('role-list')
              <a href="{{ URL('show-roles') }}" class="nav-item nav-link {{ (request()->is('show-roles*')) ? 'active' : '' }}"><i class="fa fa-user-shield me-2"></i>Role</a>
+             @endcan
          </div>
      </nav>
  </div>

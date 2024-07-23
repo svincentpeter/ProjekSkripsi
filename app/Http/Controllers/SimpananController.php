@@ -56,8 +56,22 @@ class SimpananController extends Controller
         }
 
         $simpanan = $query->orderBy('simpanan.id', 'DESC')->paginate(5);
+        $namaNasabah = DB::table('_anggota')->select('id', 'name')->get();
+        $jenisSimpanan = DB::table('jenis_simpanan')->select('id', 'nama')->get();
 
-        return view('backend.simpanan.index', compact('simpanan', 'startDate', 'endDate', 'search'));
+        // Mendapatkan nomor transaksi terakhir
+        $lastTransaction = DB::table('simpanan')
+        ->where('kodeTransaksiSimpanan', 'LIKE', 'SMP-%')
+            ->orderBy('kodeTransaksiSimpanan', 'desc')
+            ->first();
+
+        // Menentukan nomor urut simpanan baru
+        $newTransactionNumber = $lastTransaction ? (int) substr($lastTransaction->kodeTransaksiSimpanan, 4) + 1 : 1;
+
+        // Membuat kode simpanan baru
+        $kodeTransaksiSimpanan = 'SMP-' . str_pad($newTransactionNumber, 4, '0', STR_PAD_LEFT);
+
+        return view('backend.simpanan.index', compact('simpanan', 'startDate', 'endDate', 'search','namaNasabah', 'kodeTransaksiSimpanan', 'jenisSimpanan'));
     }
 
 
@@ -138,7 +152,7 @@ class SimpananController extends Controller
                             'id_anggota' => $request->id_anggota,
                             'id_jenis_simpanan' => 2, // ID 2 adalah simpanan wajib
                             'jml_simpanan' => $jml_simpanan,
-                            'bukti_pembayaran' => 'assets/img/' . $imageName,
+                            'bukti_pembayaran' => $imageName,
                             'created_by' => auth()->id(),
                             'updated_by' => auth()->id(),
                             'created_at' => now(),
