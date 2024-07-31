@@ -25,10 +25,14 @@
 
         <div class="bg-light rounded h-100 p-4">
             <h4>Informasi Pinjaman</h4>
+            @can('approve_pinjaman')
             <a href="{{ route('terima_pengajuan', $pinjaman->pinjaman_id)  }}" class="btn btn-outline-sm btn-success">Terima</a>
+            @endcan
+            @can('tolak_pinjaman')
             <button type="button" class="btn btn-outline-sm btn-danger" data-bs-toggle="modal" data-bs-target="#tolakpengajuan">
                 Tolak Pengajuan
             </button>
+            @endcan
             <div class="row">
                 <div class="col-md-6">
                     <table class="table">
@@ -62,12 +66,12 @@
                     <table class="table">
                         <tbody>
                             <tr>
-                                <th scope="row">Jumlah Cicilan</th>
+                                <th scope="row">Lama Pinjaman</th>
                                 <td>{{ $pinjaman->jml_cicilan }} Bulan</td>
                             </tr>
                             <tr>
-                                <th scope="row">Sisa Pinjaman</th>
-                                <td>Rp {{ number_format($pinjaman->sisa_pinjam, 0, ',', '.') }}</td>
+                                <th scope="row">Bunga Pinjaman</th>
+                                <td>{{ $pinjaman->bunga_pinjam }} %</td>
                             </tr>
                             <tr>
                                 <th scope="row">Jumlah Pinjaman Dengan Bunga</th>
@@ -119,7 +123,7 @@
                 </div>
 
                 <!-- Modal Bayar Angsuran -->
-                <div class="modal fade " id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -139,10 +143,17 @@
                                         <input type="number" class="form-control" id="jml_angsuran" name="jml_angsuran" required>
                                     </div>
                                     <div class="form-group">
-                                        <label for="bunga_angsuran">Bunga Angsuran 2%:</label>
+                                        <label for="bunga_angsuran">Bunga Angsuran:</label>
                                         <input type="number" class="form-control" id="bunga_angsuran" name="bunga_angsuran" readonly>
                                     </div>
-
+                                    <div class="form-group">
+                                        <label for="denda">Denda/Hari x 1%</label>
+                                        <input type="number" class="form-control" id="denda" name="denda" readonly>
+                                    </div>
+                                    <!-- Tambahkan elemen input tersembunyi untuk bunga pinjam -->
+                                    <input type="hidden" id="bunga_pinjam" value="{{ $pinjaman->bunga_pinjam }}">
+                                    <!-- Tambahkan elemen input tersembunyi untuk jatuh tempo -->
+                                    <input type="hidden" id="jatuh_tempo" value="{{ $pinjaman->jatuh_tempo }}">
                                     <div class="mb-3">
                                         <label for="bukti_pembayaran" class="form-label">Bukti Pembayaran</label>
                                         <input class="form-control form-control-sm" id="bukti_pembayaran" name="bukti_pembayaran" accept="image/*" type="file" required>
@@ -164,6 +175,7 @@
                         </div>
                     </div>
                 </div>
+
 
                 <!-- Modal Edit Angsuran -->
                 <div class="modal fade" id="editAngsuran" tabindex="-1" aria-labelledby="editAngsuranLabel" aria-hidden="true">
@@ -211,14 +223,12 @@
                 <h5>Daftar Angsuran</h5>
             </div>
             <div class="card-body">
-
-                <div>
-
-                </div>
+                <div></div>
+                @can('angsuran-create')
                 <button type="button" class="btn btn-outline-primary rounded-pill mt-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                     Bayar Angsuran
                 </button>
-
+                @endcan
                 <table class="table table-bordered mt-3">
                     <thead class="table-light">
                         <tr>
@@ -227,10 +237,10 @@
                             <th>Sisa Hutang Pokok</th>
                             <th>Bunga</th>
                             <th>Cicilan Ke-</th>
+                            <!-- <th>Denda</th> -->
                             <th>Status</th>
                             <th>Total Angsuran</th>
                             <th>Action</th>
-
                         </tr>
                     </thead>
                     <tbody>
@@ -241,6 +251,7 @@
                             <td>Rp {{ number_format($ang->sisa_angsuran, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($ang->bunga_pinjaman, 0, ',', '.') }}</td>
                             <td>{{ $ang->cicilan }}</td>
+                            <!-- <td>Rp {{ number_format($ang->denda, 0, ',', '.') }}</td> -->
                             <td>
                                 @if ($ang->status == 0)
                                 <span class="text-warning">Belum Lunas</span>
@@ -251,10 +262,12 @@
                             <td>Rp {{ number_format($ang->total_angsuran_dengan_bunga, 0, ',', '.') }}</td>
                             <td>
                                 <!-- Edit Button -->
+                                @can('angsuran-edit')
                                 <button type="button" class="btn btn-outline-warning btn-sm m-1" data-bs-toggle="modal" data-bs-target="#editAngsuran" data-id="{{ $ang->angsuran_id }}" data-jml_angsuran="{{ $ang->jml_angsuran }}" data-bunga_pinjaman="{{ $ang->bunga_pinjaman }}" data-bukti_pembayaran="{{ $ang->bukti_pembayaran }}">
                                     <i class="fas fa-edit"></i>
                                 </button>
-
+                                @endcan
+                                @can('angsuran-delete')
                                 <form action="{{ route('angsuran.destroy', $ang->angsuran_id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                     @csrf
                                     @method('DELETE')
@@ -262,9 +275,9 @@
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
+                                @endcan
                             </td>
                         </tr>
-
                         @endforeach
                     </tbody>
                     <tr>
@@ -275,6 +288,7 @@
                 {{ $angsuran->links() }} <!-- Pagination links -->
             </div>
         </div>
+
     </div>
 
     <script>
@@ -335,9 +349,32 @@
     <script>
         document.getElementById('jml_angsuran').addEventListener('input', function() {
             var jmlAngsuran = parseFloat(this.value);
-            var bungaAngsuran = jmlAngsuran * 0.02; // 2% bunga
+            var bungaPinjam = parseFloat(document.getElementById('bunga_pinjam').value); // Ambil nilai bunga dari elemen tersembunyi
+            var bungaAngsuran = jmlAngsuran * (bungaPinjam / 100); // Hitung bunga berdasarkan nilai dari server
             document.getElementById('bunga_angsuran').value = bungaAngsuran.toFixed(2);
+            calculateDenda(); // Panggil fungsi untuk menghitung denda
         });
+
+        document.getElementById('tanggal_angsuran').addEventListener('change', function() {
+            calculateDenda(); // Panggil fungsi untuk menghitung denda
+        });
+
+        function calculateDenda() {
+            var tanggalAngsuran = new Date(document.getElementById('tanggal_angsuran').value);
+            var jatuhTempo = new Date(document.getElementById('jatuh_tempo').value);
+            var denda = 0;
+
+            if (tanggalAngsuran > jatuhTempo) {
+                var timeDiff = Math.abs(tanggalAngsuran - jatuhTempo);
+                var hariTerlambat = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                var jumlahPinjam = parseFloat(document.getElementById('jml_angsuran').value);
+                if (!isNaN(jumlahPinjam)) {
+                    denda = Math.abs((jumlahPinjam * 0.01) * hariTerlambat); // Hitung denda 1% per hari keterlambatan
+                }
+            }
+
+            document.getElementById('denda').value = denda.toFixed(2);
+        }
     </script>
 
     <script>

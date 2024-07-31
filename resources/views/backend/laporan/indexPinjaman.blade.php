@@ -6,7 +6,7 @@
 <div class="container-fluid pt-4 px-4">
     <h2 class="mb-4">Laporan Pinjaman</h2>
 
-    
+
 
     <div class="bg-light rounded h-100 p-4">
         <div class="table-responsive">
@@ -46,6 +46,7 @@
                         <th scope="col">Nasabah</th>
                         <th scope="col">Jumlah Dipinjam</th>
                         <th scope="col">Durasi</th>
+                        <th scope="col">Bunga</th>
                         <th scope="col">Status</th>
                         <th scope="col">Pengelola</th>
                     </tr>
@@ -58,6 +59,8 @@
                         <td>{{ $pinjam->anggota_name }}</td>
                         <td>Rp {{ number_format($pinjam->jml_pinjam, 2, ',', '.') }}</td>
                         <td>{{ $pinjam->jml_cicilan  }} Bulan</td>
+                        <td>{{ $pinjam->bunga_pinjam  }} %</td>
+
                         <td>
                             @if ($pinjam->status_pengajuan == 0)
                             <span class="text-primary">Dibuat</span>

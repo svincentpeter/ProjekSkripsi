@@ -35,9 +35,11 @@
     <div class="bg-light rounded h-100 p-4">
         <div class="table-responsive">
             <div class="mb-3 d-flex justify-content-between">
+                @can('simpanan-create')
                 <button type="button" class="btn btn-outline-primary rounded-pill m-3" data-bs-toggle="modal" data-bs-target="#buatSimpanan">
                     <i class="fas fa-dollar-sign"></i> Tambah
                 </button>
+                @endcan
 
                 @include('backend.simpanan.modal.modalCreate')
 
@@ -53,9 +55,11 @@
                         <input type="date" name="end_date" class="form-control me-2" value="{{ request()->get('end_date') }}" onchange="document.getElementById('reportForm').submit()">
 
                     </form>
+                    @can('laporan_simpanan')
                     <a href="{{ route('simpanan.cetak', ['start_date' => request()->get('start_date'), 'end_date' => request()->get('end_date')]) }}" class="btn btn-primary ms-2">
                         <i class="fas fa-print"></i>
                     </a>
+                    @endcan
                 </div>
                 <!-- Form Pencarian -->
                 <div class="d-flex align-items-center mr-2">
@@ -86,7 +90,9 @@
                         <th scope="col">Nasabah</th>
                         <th scope="col">Transaksi</th>
                         <th scope="col">Jenis Simpanan</th>
+                        @can('simpanan-edit')
                         <th scope="col">Aksi</th>
+                        @endcan
                     </tr>
                 </thead>
                 <tbody>
@@ -103,13 +109,18 @@
                         <td>Rp {{ number_format($tabungan->jml_simpanan, 2, ',', '.') }}</td>
                         <td>{{ $tabungan->jenis_simpanan_nama }}</td>
                         <td>
+                            @can('simpanan-detail')
                             <a href="{{ route('simpanan.show', $tabungan->simpanan_id) }}" class="btn btn-outline-info" title="Show">
                                 <i class="fas fa-eye"></i>
                             </a>
+                            @endcan
+                            @can('simpanan-edit')
                             <a href="{{ route('simpanan.edit', $tabungan->simpanan_id) }}" class="btn btn-outline-warning" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
+                            @endcan
                             <!-- Form for delete action -->
+                            @can('simpanan-delete')
                             <form action="{{ route('simpanan.destroy', $tabungan->simpanan_id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                 @csrf
                                 @method('DELETE')
@@ -117,6 +128,7 @@
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
+                            @endcan
                         </td>
                     </tr>
                     @endforeach

@@ -10,7 +10,7 @@ class LaporanController extends Controller
 {
     public function indexPenarikan(Request $request)
     {
-       // Mengambil data penarikan
+        // Mengambil data penarikan
         $penarikan = DB::table('penarikan')
             ->select('penarikan.id as penarikan_id', 'penarikan.*', '_anggota.*', 'users.name as created_by_name',)
             ->join('users', 'users.id', '=', 'penarikan.created_by')
@@ -49,15 +49,15 @@ class LaporanController extends Controller
         $search = $request->get('search');
 
         $query = DB::table('simpanan')
-        ->select(
-            'simpanan.id as simpanan_id',
-            'simpanan.kodeTransaksiSimpanan',
-            'simpanan.tanggal_simpanan',
-            'simpanan.jml_simpanan',
-            'jenis_simpanan.nama as jenis_simpanan_nama',
-            'users.name as created_by_name',
-            '_anggota.name as anggota_name'
-        )
+            ->select(
+                'simpanan.id as simpanan_id',
+                'simpanan.kodeTransaksiSimpanan',
+                'simpanan.tanggal_simpanan',
+                'simpanan.jml_simpanan',
+                'jenis_simpanan.nama as jenis_simpanan_nama',
+                'users.name as created_by_name',
+                '_anggota.name as anggota_name'
+            )
             ->join('users', 'users.id', '=', 'simpanan.created_by')
             ->join('_anggota', '_anggota.id', '=', 'simpanan.id_anggota')
             ->join('jenis_simpanan', 'jenis_simpanan.id', '=', 'simpanan.id_jenis_simpanan');
@@ -69,7 +69,7 @@ class LaporanController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('simpanan.kodeTransaksiSimpanan', 'LIKE', "%$search%")
-                ->orWhere('_anggota.name', 'LIKE', "%$search%");
+                    ->orWhere('_anggota.name', 'LIKE', "%$search%");
             });
         }
 
@@ -85,18 +85,18 @@ class LaporanController extends Controller
 
         $anggota = DB::table('_anggota')->get();
         $pinjamanQuery = DB::table('pinjaman')
-        ->select(
-            'pinjaman.id as pinjaman_id',
-            'pinjaman.kodeTransaksiPinjaman',
-            'pinjaman.tanggal_pinjam',
-            'pinjaman.jatuh_tempo',
-            'pinjaman.jml_pinjam',
-            'pinjaman.jml_cicilan',
-            'pinjaman.sisa_pinjam',
-            'pinjaman.status_pengajuan',
-            'users.name as created_by_name',
-            '_anggota.name as anggota_name'
-        )
+            ->select(
+                'pinjaman.id as pinjaman_id',
+                'pinjaman.kodeTransaksiPinjaman',
+                'pinjaman.tanggal_pinjam',
+                'pinjaman.jatuh_tempo',
+                'pinjaman.jml_pinjam',
+                'pinjaman.jml_cicilan',
+                'pinjaman.bunga_pinjam',
+                'pinjaman.status_pengajuan',
+                'users.name as created_by_name',
+                '_anggota.name as anggota_name'
+            )
             ->join('users', 'users.id', '=', 'pinjaman.created_by')
             ->join('_anggota', '_anggota.id', '=', 'pinjaman.id_anggota')
             ->orderBy('pinjaman.id', 'DESC');
@@ -108,7 +108,7 @@ class LaporanController extends Controller
         if ($search) {
             $pinjamanQuery->where(function ($query) use ($search) {
                 $query->where('pinjaman.kodeTransaksiPinjaman', 'like', "%{$search}%")
-                ->orWhere('_anggota.name', 'like', "%{$search}%");
+                    ->orWhere('_anggota.name', 'like', "%{$search}%");
             });
         }
 
@@ -138,12 +138,14 @@ class LaporanController extends Controller
                 '_anggota.agama as anggota_agama',
                 'p.jml_pinjam as jml_pinjam',
                 'p.tanggal_pinjam as tanggal_pinjam',
-            'p.jml_cicilan as jml_cicilan',
+                'p.jatuh_tempo as jatuh_tempo',
+                'p.jml_cicilan as jml_cicilan',
                 'a.tanggal_angsuran as tanggal_angsuran',
                 'a.jml_angsuran as jml_angsuran',
                 'a.bunga_pinjaman as bunga_pinjaman',
                 'a.cicilan as cicilan',
-                'a.sisa_angsuran as sisa_angsuran',
+                'a.denda as denda',
+                'a.sisa_pinjam as sisa_angsuran',
                 'a.status as status_angsuran' // tambahan kolom status
             )
             ->join('_anggota', '_anggota.id', '=', 'p.id_anggota')
@@ -154,8 +156,10 @@ class LaporanController extends Controller
         // Ambil data anggota
         $anggota = $laporan->first();
 
-        // Hitung total angsuran
-        $totalAngsuran = $laporan->sum('jml_angsuran');
+        // Hitung total angsuran dengan menjumlahkan jml_angsuran, denda, dan bunga_pinjaman
+        $totalAngsuran = $laporan->sum(function ($item) {
+            return $item->jml_angsuran + $item->denda + $item->bunga_pinjaman;
+        });
 
         // Render view untuk PDF
         $pdf = PDF::loadView('backend.laporan.angsuran', compact('anggota', 'pinjaman', 'laporan', 'totalAngsuran'));
@@ -170,18 +174,18 @@ class LaporanController extends Controller
         $endDate = $request->get('end_date');
 
         $query = DB::table('pinjaman')
-        ->select(
-            'pinjaman.id as pinjaman_id',
-            'pinjaman.kodeTransaksiPinjaman',
-            'pinjaman.tanggal_pinjam',
-            'pinjaman.jatuh_tempo',
-            'pinjaman.jml_pinjam',
-            'pinjaman.jml_cicilan',
-            'pinjaman.sisa_pinjam',
-            'pinjaman.status_pengajuan',
-            'users.name as created_by_name',
-            '_anggota.name as anggota_name'
-        )
+            ->select(
+                'pinjaman.id as pinjaman_id',
+                'pinjaman.kodeTransaksiPinjaman',
+                'pinjaman.tanggal_pinjam',
+                'pinjaman.jatuh_tempo',
+                'pinjaman.jml_pinjam',
+                'pinjaman.jml_cicilan',
+                'pinjaman.bunga_pinjam',
+                'pinjaman.status_pengajuan',
+                'users.name as created_by_name',
+                '_anggota.name as anggota_name'
+            )
             ->join('users', 'users.id', '=', 'pinjaman.created_by')
             ->join('_anggota', '_anggota.id', '=', 'pinjaman.id_anggota');
 
@@ -202,17 +206,17 @@ class LaporanController extends Controller
         $endDate = $request->get('end_date');
 
         $query = DB::table('penarikan')
-        ->select(
-            'penarikan.id as penarikan_id',
-            'penarikan.kodeTransaksiPenarikan',
-            'penarikan.tanggal_penarikan',
-            'penarikan.jumlah_penarikan',
-            'penarikan.keterangan',
-            'users.name as created_by_name',
-            '_anggota.name as anggota_name',
-            '_anggota.saldo as anggota_saldo'
+            ->select(
+                'penarikan.id as penarikan_id',
+                'penarikan.kodeTransaksiPenarikan',
+                'penarikan.tanggal_penarikan',
+                'penarikan.jumlah_penarikan',
+                'penarikan.keterangan',
+                'users.name as created_by_name',
+                '_anggota.name as anggota_name',
+                '_anggota.saldo as anggota_saldo'
 
-        )
+            )
             ->join('users', 'users.id', '=', 'penarikan.created_by')
             ->join('_anggota', '_anggota.id', '=', 'penarikan.id_anggota');
 

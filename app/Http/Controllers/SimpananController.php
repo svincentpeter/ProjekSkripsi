@@ -171,6 +171,12 @@ class SimpananController extends Controller
                                 'saldo' => $totalSimpanan,
                                 'status_anggota' => $totalSimpanan > 0 ? 1 : 0,
                             ]);
+
+                        // Update atau insert ke tabel total_saldo_anggota
+                        DB::table('total_saldo_anggota')->updateOrInsert(
+                            [],
+                            ['gradesaldo' => $totalSimpanan, 'updated_at' => now()]
+                        );
                     });
                 }
             }

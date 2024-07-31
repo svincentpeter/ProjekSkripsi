@@ -27,13 +27,14 @@
     <div class="bg-light rounded h-100 p-4">
         <div class="table-responsive">
             <div class="mb-3 d-flex justify-content-between">
+                @can('pinjaman-create')
                 <button type="button" class="btn btn-outline-primary rounded-pill m-3" data-bs-toggle="modal" data-bs-target="#buatPinjaman">
                     <i class="f	fas fa-dollar-sign"></i> Tambah
                 </button>
-
+                @endcan
                 @include('backend.pinjaman.modal.modalCreate')
                 @include('backend.pinjaman.modal.modalEdit')
-                
+
                 <!-- Form Laporan Tanggal -->
                 <div class="d-flex align-items-center ms-2">
                     <span class="me-2">Report</span>
@@ -43,9 +44,11 @@
                         <input type="date" name="end_date" class="form-control me-2" value="{{ request()->get('end_date') }}" onchange="document.getElementById('reportForm').submit()">
 
                     </form>
+                    @can('laporan_pinjaman')
                     <a href="{{ route('pinjaman.cetak', ['start_date' => request()->get('start_date'), 'end_date' => request()->get('end_date')]) }}" class="btn btn-primary ms-2">
                         <i class="fas fa-print"></i>
                     </a>
+                    @endcan
                 </div>
 
                 <!-- Form Pencarian -->
@@ -93,21 +96,22 @@
                         <td>
 
                             <!-- Edit Button -->
-                            <button type="button" class="btn btn-outline-warning btn-sm m-1" data-bs-toggle="modal" data-bs-target="#editPinjaman" data-id="{{ $pinjam->pinjaman_id }}" data-tanggal_pinjam="{{ \Carbon\Carbon::parse($pinjam->tanggal_pinjam)->format('Y-m-d') }}" 
-                                data-jml_pinjam="{{ $pinjam->jml_pinjam }}"
-                                data-jml_cicilan="{{ $pinjam->jml_cicilan }}"
-                                data-jatuh_tempo="{{ \Carbon\Carbon::parse($pinjam->jatuh_tempo)->format('Y-m-d') }}"> 
+                            @can('pinjaman-edit')
+                            <button type="button" class="btn btn-outline-warning btn-sm m-1" data-bs-toggle="modal" data-bs-target="#editPinjaman" data-id="{{ $pinjam->pinjaman_id }}" data-tanggal_pinjam="{{ \Carbon\Carbon::parse($pinjam->tanggal_pinjam)->format('Y-m-d') }}" data-jml_pinjam="{{ $pinjam->jml_pinjam }}" data-jml_cicilan="{{ $pinjam->jml_cicilan }}" data-jatuh_tempo="{{ \Carbon\Carbon::parse($pinjam->jatuh_tempo)->format('Y-m-d') }}">
                                 <i class="fas fa-edit"></i>
                             </button>
-
-
+                            @endcan
+                            @can('pinjaman-detail')
                             <a href="{{ route('pinjaman.show', $pinjam->pinjaman_id) }}" class="btn btn-outline-info" title="Show">
                                 <i class="fas fa-eye"></i>
                             </a>
+                            @endcan
+                            @can('laporan_angsuran')
                             <a href="{{ route('laporan.angsuran', $pinjam->pinjaman_id) }}" class="btn btn-outline-primary" title="cetak">
                                 <i class="bi bi-printer-fill"></i>
                             </a>
-
+                            @endcan
+                            @can('pinjaman-delete')
                             <form action="{{ route('pinjaman.destroy', $pinjam->pinjaman_id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                 @csrf
                                 @method('DELETE')
@@ -115,6 +119,7 @@
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
+                            @endcan
                         </td>
                     </tr>
                     @endforeach

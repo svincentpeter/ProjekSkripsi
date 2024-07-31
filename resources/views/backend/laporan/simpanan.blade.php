@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Kop Surat Koperasi Simpan Pinjam "Open Source"</title>
+    <title>Laporan Simpanan Koperasi Simpan Pinjam "Open Source"</title>
     <style>
         body {
             font-family: "Times New Roman", Times, serif;
@@ -108,7 +108,7 @@
         <header>
             <table width="100%">
                 <tr>
-                    <td width="15%" align="center"><img src="https://pasla.jambiprov.go.id/wp-content/uploads/2023/02/lambang-koperasi.png" width="90%"></td>
+                    <td width="15%" align="center"><img src="https://kopmafeuii.com/wp-content/uploads/2017/06/LAMBANG-KOPERASI.png" width="90%"></td>
                     <td width="70%" align="center">
                         <h3>LAPORAN SIMPANAN</h1>
                             <h4>KOPERASI SIMPAN PINJAM "OPEN SOURCE"</h1>
@@ -145,6 +145,20 @@
                 </tr>
                 @endforeach
             </tbody>
+        </table><br>
+        <table width="100%">
+            <tr>
+                <td width="15%" align="center"><img src="" width="90%"></td>
+                <td width="55%" align="center"><img src="" width="90%"></td>
+                <td width="40%" align="center">
+
+                    <p class="alamatlogo">Pringsewu, {{ tanggal_indonesia(\Carbon\Carbon::now(), false) }}</p>
+                    <p class="kodeposlogo">Kepala Koperasi</p>
+                    <br><br><br>
+                    <p class="kodeposlogo">{{ auth()->user()->name}}</p>
+
+                </td>
+            </tr>
         </table>
     </div>
 </body>

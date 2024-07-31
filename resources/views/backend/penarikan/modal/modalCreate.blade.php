@@ -33,7 +33,7 @@
                      </div>
                      <div class="form-floating mb-3">
                          <input type="date" class="form-control @error('tanggal_penarikan') is-invalid @enderror" id="tanggal_penarikan" name="tanggal_penarikan" value="{{ old('tanggal_penarikan') }}" required>
-                         <label for="tanggal_pinjam">Tanggal Pinjam</label>
+                         <label for="tanggal_pinjam">Tanggal Penarikan</label>
                          @error('tanggal_penarikan')
                          <span class="invalid-feedback" role="alert">
                              <strong>{{ $message }}</strong>

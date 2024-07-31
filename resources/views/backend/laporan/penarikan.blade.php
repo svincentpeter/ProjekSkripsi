@@ -148,6 +148,20 @@
                 </tr>
                 @endforeach
             </tbody>
+        </table><br>
+        <table width="100%">
+            <tr>
+                <td width="15%" align="center"><img src="" width="90%"></td>
+                <td width="55%" align="center"><img src="" width="90%"></td>
+                <td width="40%" align="center">
+
+                    <p class="alamatlogo">Pringsewu, {{ tanggal_indonesia(\Carbon\Carbon::now(), false) }}</p>
+                    <p class="kodeposlogo">Kepala Koperasi</p>
+                    <br><br><br>
+                    <p class="kodeposlogo">{{ auth()->user()->name}}</p>
+
+                </td>
+            </tr>
         </table>
     </div>
 </body>

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('tanggal_pinjam');
             $table->string('jatuh_tempo');
             $table->integer('jml_pinjam');
-            $table->integer('sisa_pinjam');
+            $table->integer('bunga_pinjam');
             $table->string('jml_cicilan');
             $table->string('status_pengajuan');
             $table->string('keterangan_ditolak_pengajuan');

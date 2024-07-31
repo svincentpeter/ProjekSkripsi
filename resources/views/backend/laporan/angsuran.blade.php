@@ -194,6 +194,10 @@
                     <td>: {{ tanggal_indonesia($pinjaman->tanggal_pinjam,false) }}</td>
                 </tr>
                 <tr>
+                    <th>TANGGAL JATUH TEMPO</th>
+                    <td>: {{ tanggal_indonesia($pinjaman->jatuh_tempo,false) }}</td>
+                </tr>
+                <tr>
                     <th>JATUH TEMPO</th>
                     <td>: {{ $pinjaman->jml_cicilan }} Bulan</td>
                 </tr>
@@ -208,6 +212,7 @@
                         <th>Tanggal Pembayaran</th>
                         <th>Angsuran (Rp.)</th>
                         <th>Bunga (Rp.)</th>
+                        <th>Denda (Rp.)</th>
                         <th>Sisa Hutang Pokok (Rp.)</th>
                         <th>Status</th>
                     </tr>
@@ -217,10 +222,18 @@
                     <tr>
                         <td>Angsuran ke- {{ $index + 1 }}</td>
                         <td>{{ tanggal_indonesia($laporanItem->tanggal_angsuran,false) }}</td>
-                        <td>{{ number_format($laporanItem->jml_angsuran, 2, ',', '.') }}</td>
-                        <td>{{ number_format($laporanItem->bunga_pinjaman, 2, ',', '.') }}</td>
-                        <td>{{ number_format($laporanItem->sisa_angsuran, 2, ',', '.') }}</td>
-                        <td>{{ $laporanItem->status_angsuran }}</td>
+                        <td>Rp.{{ number_format($laporanItem->jml_angsuran, 2, ',', '.') }}</td>
+                        <td>Rp.{{ number_format($laporanItem->bunga_pinjaman, 2, ',', '.') }}</td>
+                        <td>Rp.{{ number_format($laporanItem->denda, 2, ',', '.') }}</td>
+                        <td>Rp.{{ number_format($laporanItem->sisa_angsuran, 2, ',', '.') }}</td>
+                        <td>
+                            @if ($laporanItem->status_angsuran == 0)
+                            <span>Belum Lunas</span>
+                            @elseif ($laporanItem->status_angsuran == 1)
+                            <span>Lunas</span>
+                            @endif
+                        </td>
+
                     </tr>
                     @endforeach
                 </tbody>
@@ -231,7 +244,20 @@
             <p>Jumlah Total Angsuran: <strong>{{ number_format($totalAngsuran, 2, ',', '.') }}</strong></p>
         </div>
     </div>
+    <table width="100%">
+        <tr>
+            <td width="15%" align="center"><img src="" width="90%"></td>
+            <td width="55%" align="center"><img src="" width="90%"></td>
+            <td width="40%" align="center">
 
+                <p class="alamatlogo">Pringsewu, {{ tanggal_indonesia(\Carbon\Carbon::now(), false) }}</p>
+                <p class="kodeposlogo">Kepala Koperasi</p>
+                <br><br><br>
+                <p class="kodeposlogo">{{ auth()->user()->name}}</p>
+
+            </td>
+        </tr>
+    </table>
 </body>
 
 </html>

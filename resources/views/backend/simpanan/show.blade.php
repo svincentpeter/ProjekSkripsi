@@ -80,7 +80,7 @@
                         <h5 class="card-title">Bukti Pembayaran</h5>
                         <div class="text-center">
                             @if ($detailSimpanan->bukti)
-                            <img src="{{ asset($detailSimpanan->bukti) }}" id="proof-image" alt="Bukti Pembayaran" style="max-width: 100%; cursor: pointer;">
+                            <img src="{{ asset($detailSimpanan->bukti) }}" id="proof-image" alt="Bukti Pembayaran" style="max-width: 50%; cursor: pointer;">
                             @else
                             <p>Tidak ada bukti pembayaran</p>
                             @endif

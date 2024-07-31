@@ -86,7 +86,7 @@
                                 @error('image')
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
-                                <img id="image-preview" src="#" alt="Image Preview" style="display: none; max-width: 500%; height: auto; margin-top: 10px;">
+                                <img id="image-preview" src="#" alt="Image Preview" style="display: none; max-width: 50%; height: auto; margin-top: 10px;">
                                 <div id="crop-container" style="width: 100%; max-height: 70vh; overflow: hidden; display: none;">
                                     <img id="crop-image" src="#" alt="Crop Image" style="max-width: 100%; height: auto;">
                                 </div>

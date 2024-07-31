@@ -17,7 +17,9 @@
          </div>
          <div class="navbar-nav w-100">
              <a href="{{route('home')}}" class="nav-item nav-link {{ (request()->is('home*')) ? 'active' : '' }}"><i class="fa fa-home me-2"></i>Dashboard</a>
+             @can('user-list')
              <a href="{{route('user')}}" class="nav-item nav-link {{ (request()->is('user*')) ? 'active' : '' }}"><i class="fa fa-user me-2"></i>User</a>
+             @endcan
              @can('nasabah-list')
              <a href="{{route('nasabah')}}" class="nav-item nav-link {{ (request()->is('nasabah*')) ? 'active' : '' }}"><i class="fa fa-user-friends me-2"></i>Nasabah</a>
              @endcan

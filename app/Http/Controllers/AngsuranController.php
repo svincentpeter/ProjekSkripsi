@@ -74,11 +74,19 @@ class AngsuranController extends Controller
 
         // Jumlah angsuran yang dibayar
         $jml_angsuran = $request->jml_angsuran;
-        $bunga_angsuran = $jml_angsuran * 0.02; // Hitung bunga 2%
-        $total_angsuran = $jml_angsuran + $bunga_angsuran; // Total angsuran dengan bunga
+
+        // Hitung bunga berdasarkan persentase bunga pinjaman
+        $bunga_angsuran = ($jml_angsuran * $pinjaman->bunga_pinjam) / 100;
+
+        // Hitung sisa pinjaman berdasarkan data angsuran sebelumnya
+        $total_dibayar = DB::table('angsuran')
+        ->where('id_pinjaman', $pinjaman_id)
+            ->sum('jml_angsuran');
+
+        $sisa_pinjam = $pinjaman->jml_pinjam - $total_dibayar;
 
         // Periksa jika angsuran melebihi jumlah pinjaman yang tersisa
-        if ($total_angsuran > $pinjaman->sisa_pinjam + $bunga_angsuran) {
+        if ($jml_angsuran > $sisa_pinjam) {
             return redirect()->back()->with('error', 'Pembayaran melebihi jumlah yang harus dibayarkan.');
         }
 
@@ -87,9 +95,22 @@ class AngsuranController extends Controller
 
         // Periksa jika ini adalah cicilan terakhir dan pembayaran kurang dari sisa pinjaman
         $cicilan_terakhir = $pinjaman->jml_cicilan - $jumlah_cicilan_sudah_dibayar;
-        if ($cicilan_terakhir == 1 && $jml_angsuran < $pinjaman->sisa_pinjam) {
+        if ($cicilan_terakhir == 1 && $jml_angsuran < $sisa_pinjam) {
             return redirect()->back()->with('error', 'Anda harus melunasi pinjaman karena ini adalah cicilan terakhir dan sisa pinjaman harus dibayarkan.');
         }
+
+        // Hitung denda jika tanggal angsuran melewati jatuh tempo
+        $jatuh_tempo = \Carbon\Carbon::parse($pinjaman->jatuh_tempo);
+        $tanggal_angsuran = \Carbon\Carbon::parse($request->tanggal_angsuran);
+        $denda = 0;
+
+        if ($tanggal_angsuran->greaterThan($jatuh_tempo)) {
+            $hari_terlambat = $tanggal_angsuran->diffInDays($jatuh_tempo);
+            $denda = abs(($pinjaman->jml_pinjam * 0.01) * $hari_terlambat);
+        }
+
+        // Total angsuran dengan bunga dan denda
+        $total_angsuran = $jml_angsuran + $bunga_angsuran + $denda;
 
         // Upload bukti pembayaran
         $image = $request->file('bukti_pembayaran');
@@ -98,9 +119,9 @@ class AngsuranController extends Controller
 
         // Mendapatkan nomor transaksi terakhir
         $lastTransaction = DB::table('angsuran')
-            ->where('kodeTransaksiAngsuran', 'LIKE', 'ANG-%')
-            ->orderBy('kodeTransaksiAngsuran', 'desc')
-            ->first();
+        ->where('kodeTransaksiAngsuran', 'LIKE', 'ANG-%')
+        ->orderBy('kodeTransaksiAngsuran', 'desc')
+        ->first();
         // Menentukan nomor urut angsuran baru
         $newTransactionNumber = $lastTransaction ? (int) substr($lastTransaction->kodeTransaksiAngsuran, 4) + 1 : 1;
         // Simpan data angsuran ke dalam tabel 'angsuran'
@@ -110,11 +131,13 @@ class AngsuranController extends Controller
             'kodeTransaksiAngsuran' => $kodeTransaksiAngsuran,
             'id_pinjaman' => $pinjaman_id,
             'tanggal_angsuran' => $request->tanggal_angsuran,
-            'jml_angsuran' =>$request->jml_angsuran,
-            'sisa_angsuran' => $pinjaman->sisa_pinjam - $jml_angsuran,
+            'jml_angsuran' => $jml_angsuran,
+            'sisa_pinjam' => $sisa_pinjam - $jml_angsuran,
             'cicilan' => $jumlah_cicilan_sudah_dibayar + 1,
-            'status' => ($pinjaman->sisa_pinjam - $jml_angsuran > 0) ? '0' : '1',
+            'status' => ($sisa_pinjam - $jml_angsuran > 0) ? '0' : '1',
             'bunga_pinjaman' => $bunga_angsuran,
+            'denda' => $denda,
+           
             'bukti_pembayaran' => $imageName, // Simpan nama file bukti pembayaran
             'created_by' => Auth::id(),
             'updated_by' => Auth::id(),
@@ -124,14 +147,17 @@ class AngsuranController extends Controller
 
         // Update jumlah pinjaman dan sisa pinjaman di tabel 'pinjaman'
         DB::table('pinjaman')->where('id', $pinjaman_id)->update([
-            'sisa_pinjam' => $pinjaman->sisa_pinjam - $jml_angsuran,
-            'status_pengajuan' => ($pinjaman->sisa_pinjam - $jml_angsuran > 0) ? $pinjaman->status_pengajuan : '3',
+            'status_pengajuan' => ($sisa_pinjam - $jml_angsuran > 0) ? $pinjaman->status_pengajuan : '3',
             'updated_at' => now(),
         ]);
 
         return redirect()->route('pinjaman.show', $pinjaman_id)
-            ->with('success', 'Angsuran berhasil dilakukan. Total angsuran yang harus dibayar: Rp ' . number_format($total_angsuran, 0, ',', '.'));
+            ->with('success', 'Angsuran berhasil dilakukan. Total angsuran yang harus dibayar: Rp ' . number_format($total_angsuran, 0, ',', '.') . '. Denda: Rp ' . number_format($denda, 0, ',', '.'));
     }
+
+
+
+
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -169,7 +195,7 @@ class AngsuranController extends Controller
         $data = [
             'jml_angsuran' => $jumlahAngsuranBaru,
             'bunga_pinjaman' => $request->input('bunga_pinjaman'),
-            'sisa_angsuran' => $angsuran->sisa_angsuran - $selisihAngsuran,
+            'sisa_pinjam' => $angsuran->sisa_angsuran - $selisihAngsuran,
             'updated_by' => auth()->user()->id,
             'updated_at' => now(),
         ];
@@ -195,7 +221,7 @@ class AngsuranController extends Controller
         $sisaSaldo = $pinjaman->sisa_pinjam - $selisihAngsuran;
 
         // Cek dan perbarui status angsuran dan pinjaman
-        if ($data['sisa_angsuran'] > 0) {
+        if ($data['sisa_pinjam'] > 0) {
             $data['status'] = 0; // Belum lunas
             DB::table('pinjaman')->where('id', $pinjaman->id)->update([
                 'sisa_pinjam' => $sisaSaldo,

@@ -42,10 +42,11 @@
 
                                 <!-- <a href="{{route('createNasabah')}}" class="btn btn-outline-primary rounded-pill m-2"><i class="fas fa-user-plus"> </i> Tambah </a> -->
                                 <!-- Button to Open the Modal -->
+                                @can('nasabah-create')
                                 <button type="button" class="btn btn-outline-primary rounded-pill m-3" data-bs-toggle="modal" data-bs-target="#buatAnggota">
                                     <i class="fas fa-user-plus"></i> Tambah
                                 </button>
-
+                                @endcan
                                 @include('backend.nasabah.modal.modalCreate')
                             </div>
                             <tr>
@@ -56,7 +57,9 @@
                                 <th scope="col">Saldo</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Update_at</th>
+                                @can('nasabah-detail')
                                 <th scope="col">Aksi</th>
+                                @endcan
                             </tr>
                         </thead>
                         <tbody>
@@ -82,11 +85,15 @@
 
                                 <td>{{$anggota->updated_at ?? \Carbon\Carbon::now() }}</td>
                                 <td>
-
+                                    @can('nasabah-detail')
                                     <a href="{{ route('nasabah.show', $anggota->id) }}" class="btn btn-outline-info" title="Show">
                                         <i class="fas fa-eye"></i>
                                     </a>
+                                    @endcan
+                                    @can('nasabah-edit')
                                     <a href="{{ route('nasabah.edit', $anggota->id) }}" class="btn btn-outline-warning" title="edit"> <i class="fas fa-edit"></i></a>
+                                    @endcan
+                                    @can('nasabah-delete')
                                     <form action="{{ route('nasabah.destroy', $anggota->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                         @csrf
                                         @method('DELETE')
@@ -94,6 +101,7 @@
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>
+                                    @endcan
                                 </td>
                             </tr>
                             @endforeach

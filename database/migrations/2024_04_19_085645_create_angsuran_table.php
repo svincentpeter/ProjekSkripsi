@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('keterangan')->nullable();
             $table->string('bukti_pembayaran');
             $table->string('bunga_pinjaman');
+            $table->integer('denda');
             $table->foreignId('created_by')->notNull()->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('updated_by')->notNull()->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();

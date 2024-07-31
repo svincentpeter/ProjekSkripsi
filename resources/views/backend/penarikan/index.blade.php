@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container-fluid pt-4 px-4">
-    <h2 class="mb-4">Data Pinjaman</h2>
+    <h2 class="mb-4">Data Penarikan</h2>
 
     <!-- Alert Success -->
     @if(Session::has('success'))
@@ -27,9 +27,11 @@
     <div class="bg-light rounded h-100 p-4">
         <div class="table-responsive">
             <div class="mb-3 d-flex justify-content-between">
+                @can('penarikan-create')
                 <button type="button" class="btn btn-outline-primary rounded-pill m-3" data-bs-toggle="modal" data-bs-target="#buatPenarikan">
                     <i class="f	fas fa-dollar-sign"></i> Tambah
                 </button>
+                @endcan
                 @include('backend.penarikan.modal.modalCreate')
                 @include('backend.penarikan.modal.modalEdit')
 
@@ -42,9 +44,12 @@
                         <span class="me-2">To</span>
                         <input type="date" name="end_date" class="form-control me-2" value="{{ request()->get('end_date') }}" onchange="document.getElementById('reportForm').submit()">
                     </form>
+                    @can('laporan_penarikan')
                     <a href="{{ route('penarikan.cetak', ['start_date' => request()->get('start_date'), 'end_date' => request()->get('end_date')]) }}" class="btn btn-primary ms-2">
                         <i class="fas fa-print"></i>
                     </a>
+                    @endcan
+
                 </div>
 
                 <!-- Form Pencarian -->
@@ -66,7 +71,9 @@
                         <th scope="col">Nasabah</th>
                         <th scope="col">Jumlah Penarikan</th>
                         <th scope="col">Keterangan</th>
+                        @can('penarikan-edit')
                         <th scope="col">Aksi</th>
+                        @endcan
                     </tr>
                 </thead>
                 <tbody>
@@ -79,10 +86,12 @@
                         <td>{{ $tarik->keterangan }}</td>
                         <td>
                             <!-- Edit Button -->
+                            @can('penarikan-edit')
                             <button type="button" class="btn btn-outline-warning btn-sm m-1" data-bs-toggle="modal" data-bs-target="#editPenarikan" data-id="{{ $tarik->penarikan_id }}" data-jumlah_penarikan="{{ $tarik->jumlah_penarikan }}" data-keterangan="{{ $tarik->keterangan }}" data-saldo="{{ $tarik->saldo }}">
                                 <i class="fas fa-edit"></i>
                             </button>
-
+                            @endcan
+                            @can('penarikan-delete')
                             <form action="{{ route('penarikan.destroy', $tarik->penarikan_id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                 @csrf
                                 @method('DELETE')
@@ -90,6 +99,7 @@
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
+                            @endcan
                         </td>
                     </tr>
                     @endforeach

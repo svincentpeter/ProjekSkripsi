@@ -23,7 +23,7 @@ class PinjamanController extends Controller
                 'pinjaman.jatuh_tempo',
                 'pinjaman.jml_pinjam',
                 'pinjaman.jml_cicilan',
-                'pinjaman.sisa_pinjam',
+                'pinjaman.bunga_pinjam',
                 'pinjaman.status_pengajuan',
                 'users.name as created_by_name',
                 '_anggota.name as anggota_name'
@@ -47,7 +47,7 @@ class PinjamanController extends Controller
         $pinjaman = $pinjamanQuery->orderBy('pinjaman.id', 'DESC')->paginate(5);
         // Calculate total saldo and maxPinjamanBaru
         $totalSaldo = DB::table('_anggota')->sum('saldo');
-        $maxPinjaman = $totalSaldo * 0.9;
+        $maxPinjaman = $totalSaldo * 1;
         $totalPinjamanSebelumnya = DB::table('pinjaman')->sum('jml_pinjam');
         $maxPinjamanBaru = $maxPinjaman - $totalPinjamanSebelumnya;
 
@@ -96,6 +96,7 @@ class PinjamanController extends Controller
             'jml_pinjam' => 'required|numeric',
             'jml_cicilan' => 'required|numeric',
             'id_anggota' => 'required|exists:_anggota,id',
+            'bunga_pinjam' => 'required|numeric|min:0|max:100',
         ], [
             'tanggal_pinjam.required' => 'Tanggal Pinjam harus diisi.',
             'tanggal_pinjam.date' => 'Tanggal Pinjam harus berupa tanggal yang valid.',
@@ -105,11 +106,15 @@ class PinjamanController extends Controller
             'jml_cicilan.numeric' => 'Jumlah Cicilan harus berupa angka.',
             'id_anggota.required' => 'Anggota harus dipilih.',
             'id_anggota.exists' => 'Anggota yang dipilih tidak valid.',
+            'bunga_pinjam.required' => 'Bunga Pinjam harus diisi.',
+            'bunga_pinjam.numeric' => 'Bunga Pinjam harus berupa angka.',
+            'bunga_pinjam.min' => 'Bunga Pinjam harus lebih besar atau sama dengan 0.',
+            'bunga_pinjam.max' => 'Bunga Pinjam harus lebih kecil atau sama dengan 100.',
         ]);
 
         // Cek apakah ada pengajuan dengan status selain 3 untuk anggota tersebut
         $pendingPengajuan = DB::table('pinjaman')
-            ->where('id_anggota', $request->id_anggota)
+        ->where('id_anggota', $request->id_anggota)
             ->where('status_pengajuan', '<>', 3)
             ->exists();
 
@@ -139,8 +144,8 @@ class PinjamanController extends Controller
             'tanggal_pinjam' => $request->tanggal_pinjam,
             'jatuh_tempo' => $jatuhTempo,
             'jml_pinjam' => $request->jml_pinjam,
+            'bunga_pinjam' => $request->bunga_pinjam,
             'jml_cicilan' => $request->jml_cicilan,
-            'sisa_pinjam' => $request->jml_pinjam,
             'status_pengajuan' => 0,
             'keterangan_ditolak_pengajuan' => '',
             'created_by' => auth()->id(),
@@ -152,6 +157,7 @@ class PinjamanController extends Controller
 
         return redirect()->route('pinjaman')->with('success', 'Pinjaman berhasil ditambahkan.');
     }
+
 
     public function update(Request $request, $id)
     {
@@ -220,18 +226,18 @@ class PinjamanController extends Controller
     {
         // Ambil data pinjaman berdasarkan $pinjaman_id menggunakan Query Builder
         $pinjaman = DB::table('pinjaman')
-            ->select(
-                'pinjaman.id as pinjaman_id',
-                'pinjaman.kodeTransaksiPinjaman',
-                'pinjaman.tanggal_pinjam',
-                'pinjaman.jatuh_tempo',
-                'pinjaman.jml_pinjam',
-                'pinjaman.jml_cicilan',
-                'pinjaman.sisa_pinjam',
-                'pinjaman.status_pengajuan',
-                'users.name as created_by_name',
-                '_anggota.name as anggota_name'
-            )
+        ->select(
+            'pinjaman.id as pinjaman_id',
+            'pinjaman.kodeTransaksiPinjaman',
+            'pinjaman.tanggal_pinjam',
+            'pinjaman.jatuh_tempo',
+            'pinjaman.jml_pinjam',
+            'pinjaman.jml_cicilan',
+            'pinjaman.bunga_pinjam',
+            'pinjaman.status_pengajuan',
+            'users.name as created_by_name',
+            '_anggota.name as anggota_name'
+        )
             ->join('users', 'users.id', '=', 'pinjaman.created_by')
             ->join('_anggota', '_anggota.id', '=', 'pinjaman.id_anggota')
             ->where('pinjaman.id', $pinjaman_id)
@@ -242,29 +248,30 @@ class PinjamanController extends Controller
         }
 
         // Hitung total pinjaman yang termasuk bunga
-        $suku_bunga_bulanan = 0.02; // Misalnya suku bunga bulanan 2%
-        $bunga_bulanan = $pinjaman->sisa_pinjam * $suku_bunga_bulanan;
-        $total_pinjaman_dengan_bunga = $pinjaman->sisa_pinjam + $bunga_bulanan;
+        $bunga_persen = $pinjaman->bunga_pinjam;
+        $bunga_total = ($pinjaman->jml_pinjam * $bunga_persen) / 100;
+        $total_pinjaman_dengan_bunga = $pinjaman->jml_pinjam + $bunga_total;
 
         // Tambahkan properti total_pinjaman_dengan_bunga ke objek $pinjaman
         $pinjaman->total_pinjaman_dengan_bunga = $total_pinjaman_dengan_bunga;
 
         // Ambil daftar angsuran terkait pinjaman menggunakan Query Builder
         $angsuran = DB::table('angsuran')
-            ->select(
+        ->select(
             'angsuran.id as angsuran_id',
-                'angsuran.kodeTransaksiAngsuran',
-                'angsuran.tanggal_angsuran',
-                'angsuran.jml_angsuran',
-                'angsuran.sisa_angsuran',
-                'angsuran.cicilan',
-                'angsuran.status',
-                'angsuran.keterangan',
-                'angsuran.bukti_pembayaran',
-                'angsuran.bunga_pinjaman',
-                DB::raw('(angsuran.jml_angsuran + angsuran.bunga_pinjaman) as total_angsuran_dengan_bunga'),
-                'users.name as created_by_name'
-            )
+            'angsuran.kodeTransaksiAngsuran',
+            'angsuran.tanggal_angsuran',
+            'angsuran.jml_angsuran',
+            'angsuran.sisa_pinjam as sisa_angsuran',
+            'angsuran.cicilan',
+            'angsuran.status',
+            'angsuran.denda',
+            'angsuran.keterangan',
+            'angsuran.bukti_pembayaran',
+            'angsuran.bunga_pinjaman',
+            DB::raw('(angsuran.jml_angsuran + angsuran.bunga_pinjaman + COALESCE(angsuran.denda, 0)) as total_angsuran_dengan_bunga'), // Pastikan denda tidak null
+            'users.name as created_by_name'
+        )
             ->join('users', 'users.id', '=', 'angsuran.created_by')
             ->where('angsuran.id_pinjaman', $pinjaman_id)
             ->orderBy('angsuran.tanggal_angsuran', 'asc')
@@ -272,8 +279,8 @@ class PinjamanController extends Controller
 
         // Hitung total angsuran
         $total_angsuran = DB::table('angsuran')
-            ->where('angsuran.id_pinjaman', $pinjaman_id)
-            ->sum(DB::raw('angsuran.jml_angsuran + angsuran.bunga_pinjaman'));
+        ->where('angsuran.id_pinjaman', $pinjaman_id)
+            ->sum(DB::raw('angsuran.jml_angsuran + angsuran.bunga_pinjaman + COALESCE(angsuran.denda, 0)'));
 
         return view('backend.pinjaman.show', [
             'pinjaman' => $pinjaman,
