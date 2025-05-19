@@ -9,12 +9,27 @@ class BerandaController extends Controller
 {
     public function index()
     {
-        $countSimpanan = DB::table('_t_r__pengajuan')->where('status_pengajuan_vendor', 2)->count();
-        $countpenarikan = DB::table('_t_r__pengajuan')->where('status_pengajuan_vendor', 1)->count();
-        $countpinjaman = DB::table('_detail__pengajuan')->get('id')->count();
-        $counttotalanggota = DB::table('_anggota')->get('id')->count();
-        $countDitolakPengajuan = DB::table('_t_r__pengajuan')->where('status_pengajuan_ap', 2)->count();
-        $countDiterimaPengajuan = DB::table('_t_r__pengajuan')->where('status_pengajuan_ap', 1)->count();
+        // Total simpanan (semua transaksi simpanan)
+        $countSimpanan = DB::table('simpanan')->count();
+
+        // Total penarikan (semua transaksi penarikan)
+        $countpenarikan = DB::table('penarikan')->count();
+
+        // Total pinjaman (semua record pinjaman)
+        $countpinjaman = DB::table('pinjaman')->count();
+
+        // Total anggota
+        $counttotalanggota = DB::table('anggota')->count();
+
+        // Dari tabel pinjaman, hitung yang berstatus 'DITOLAK'
+        $countDitolakPengajuan = DB::table('pinjaman')
+            ->where('status', 'DITOLAK')
+            ->count();
+
+        // Dari tabel pinjaman, hitung yang berstatus 'DISETUJUI'
+        $countDiterimaPengajuan = DB::table('pinjaman')
+            ->where('status', 'DISETUJUI')
+            ->count();
 
         return view('backend.home.index', compact(
             'countSimpanan',

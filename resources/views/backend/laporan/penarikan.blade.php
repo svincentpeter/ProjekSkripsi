@@ -102,68 +102,74 @@
         }
     </style>
 </head>
-
 <body>
-    <div>
-        <header>
-            <table width="100%">
-                <tr>
-                    <td width="15%" align="center"><img src="https://pasla.jambiprov.go.id/wp-content/uploads/2023/02/lambang-koperasi.png" width="90%"></td>
-                    <td width="70%" align="center">
-                        <h3>LAPORAN PPENARIKAN</h1>
-                            <h4>KOPERASI SIMPAN PINJAM "OPEN SOURCE"</h1>
-                                <p class="alamatlogo">Jl. A Yani No. 1 A Tambak Rejo, Wonodadi, Kec. Pringsewu</p>
-                                <p class="kodeposlogo">Pringsewu, Lampung 35372</p>
-                    </td>
-                    <td width="15%" align="center"><img src="https://kopkarindu.wordpress.com/wp-content/uploads/2014/05/koperasi-logo-baru-indonesia-vector.jpg" width="90%"></td>
-                </tr>
-            </table>
-            <hr class="garis1">
-        </header><br>
-        <div id="laporan-title">
-            <h4>Laporan Penarikan</h4>
-            <p>Periode: {{ tanggal_indonesia($startDate, false) }} - {{ tanggal_indonesia($endDate, false) }}</p>
-        </div>
+    <header>
+        <table width="100%">
+            <tr>
+                <td width="15%" align="center">
+                    <img src="https://pasla.jambiprov.go.id/wp-content/uploads/2023/02/lambang-koperasi.png" width="90%">
+                </td>
+                <td width="70%" align="center">
+                    <h3>LAPORAN PENARIKAN</h3>
+                    <h4>KOPERASI SIMPAN PINJAM "OPEN SOURCE"</h4>
+                    <p class="alamatlogo">Jl. A Yani No. 1 A Tambak Rejo, Wonodadi, Kec. Pringsewu</p>
+                    <p class="kodeposlogo">Pringsewu, Lampung 35372</p>
+                </td>
+                <td width="15%" align="center">
+                    <img src="https://kopkarindu.wordpress.com/wp-content/uploads/2014/05/koperasi-logo-baru-indonesia-vector.jpg" width="90%">
+                </td>
+            </tr>
+        </table>
+        <hr class="garis1">
+    </header>
+
+    <div id="laporan-title">
+        <h4>Laporan Penarikan</h4>
+        <p>Periode: {{ tanggal_indonesia($startDate, false) }} – {{ tanggal_indonesia($endDate, false) }}</p>
+    </div>
+
+    <div class="table-container">
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Tanggal</th>
                     <th>Nasabah</th>
-                    <th>Kode Tarik</th>
+                    <th>Kode Penarikan</th>
                     <th>Jumlah Penarikan</th>
                     <th>Sisa Saldo</th>
                     <th>Keterangan</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($penarikan as $tarik)
+                @forelse($penarikan as $tarik)
                 <tr>
                     <td>{{ tanggal_indonesia($tarik->tanggal_penarikan, false) }}</td>
                     <td>{{ $tarik->anggota_name }}</td>
-                    <td>{{ $tarik->kodeTransaksiPenarikan }}</td>
+                    <td>{{ $tarik->kode_transaksi }}</td>
                     <td>Rp {{ number_format($tarik->jumlah_penarikan, 2, ',', '.') }}</td>
                     <td>Rp {{ number_format($tarik->anggota_saldo, 2, ',', '.') }}</td>
                     <td>{{ $tarik->keterangan }}</td>
-
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="6" class="text-center">Tidak Ada Data Penarikan</td>
+                </tr>
+                @endforelse
             </tbody>
-        </table><br>
+        </table>
+    </div>
+
+    <footer>
         <table width="100%">
             <tr>
-                <td width="15%" align="center"><img src="" width="90%"></td>
-                <td width="55%" align="center"><img src="" width="90%"></td>
+                <td width="60%"></td>
                 <td width="40%" align="center">
-
                     <p class="alamatlogo">Pringsewu, {{ tanggal_indonesia(\Carbon\Carbon::now(), false) }}</p>
-                    <p class="kodeposlogo">Kepala Koperasi</p>
-                    <br><br><br>
-                    <p class="kodeposlogo">{{ auth()->user()->name}}</p>
-
+                    <p class="kodeposlogo">Kepala Koperasi</p><br><br><br>
+                    <p class="kodeposlogo">{{ auth()->user()->name }}</p>
                 </td>
             </tr>
         </table>
-    </div>
+    </footer>
 </body>
-
 </html>

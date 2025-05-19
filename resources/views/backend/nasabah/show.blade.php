@@ -1,28 +1,32 @@
 @extends('backend.app')
-
-@section('title', 'Detail Anggota')
-
+@section('title', 'Detail Nasabah')
 @section('content')
 <div class="container-fluid pt-4 px-4">
-    @if(Session::has('error'))
-    <div id="errorAlert" class="alert alert-danger alert-dismissible fade show custom-alert" role="alert">
-        <h5 class="alert-heading"><i class="icon fas fa-times-circle"></i> Error!</h5>
-        {{ Session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show custom-alert" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @endif
 
-    <h2 class="mb-4">Detail Anggota</h2>
+    <h2 class="mb-4">Detail Nasabah</h2>
     <div class="bg-light rounded h-100 p-4">
-
         <div class="row">
+            {{-- Foto --}}
             <div class="col-md-4">
                 <div class="card mb-4">
-                    <img src="{{  asset('assets/backend/img/' . $anggota->image)}}" class="card-img-top" alt="Foto Anggota">
-
+                    @if($anggota->image)
+                    <img src="{{ asset('assets/backend/img/' . $anggota->image) }}"
+                         class="card-img-top" alt="Foto Nasabah">
+                    @else
+                    <div class="card-body text-center">
+                        <span class="text-muted">Tidak ada foto</span>
+                    </div>
+                    @endif
                 </div>
             </div>
 
+            {{-- Data --}}
             <div class="col-md-8">
                 <table class="table">
                     <tbody>
@@ -31,46 +35,77 @@
                             <td>{{ $anggota->name }}</td>
                         </tr>
                         <tr>
+                            <th>Email</th>
+                            <td>{{ $anggota->user ? $anggota->user->email : '-' }}</td>
+                        </tr>
+                        <tr>
                             <th>NIP</th>
                             <td>{{ $anggota->nip }}</td>
                         </tr>
                         <tr>
+                            <th>Telepon</th>
+                            <td>{{ $anggota->telphone }}</td>
+                        </tr>
+                        <tr>
                             <th>Agama</th>
-                            <td>{{ $anggota->agama }}</td>
+                            <td>{{ $anggota->agama ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th>Jenis Kelamin</th>
-                            <td>{{ $anggota->jenis_kelamin }}</td>
+                            <td>
+                                @if($anggota->jenis_kelamin == 'L')
+                                    Laki-Laki
+                                @elseif($anggota->jenis_kelamin == 'P')
+                                    Perempuan
+                                @else
+                                    -
+                                @endif
+                            </td>
                         </tr>
                         <tr>
                             <th>Tanggal Lahir</th>
-                            <td>{{ $anggota->tgl_lahir }}</td>
+                            <td>{{ $anggota->tgl_lahir ? \Carbon\Carbon::parse($anggota->tgl_lahir)->format('d-m-Y') : '-' }}</td>
                         </tr>
                         <tr>
                             <th>Pekerjaan</th>
-                            <td>{{ $anggota->pekerjaan }}</td>
+                            <td>{{ $anggota->pekerjaan ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th>Alamat</th>
-                            <td>{{ $anggota->alamat }}</td>
+                            <td>{{ $anggota->alamat ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th>Status Anggota</th>
-                            <td>{{ $anggota->status_anggota ? 'Aktif' : 'Non Aktif' }}</td>
+                            <td>
+                                @if($anggota->status_anggota == 1)
+                                    <span class="badge bg-success">Aktif</span>
+                                @else
+                                    <span class="badge bg-danger">Non-Aktif</span>
+                                @endif
+                            </td>
                         </tr>
                         <tr>
                             <th>Saldo</th>
-                            <td>Rp {{ number_format($anggota->saldo, 0, ',', '.') }}</td>
+                            <td>{{ format_rupiah($anggota->saldo) }}</td>
                         </tr>
                         <tr>
-                            <th>Tanggal Gabung</th>
-                            <td>{{ $anggota->tgl_gabung }}</td>
+                            <th>Dibuat</th>
+                            <td>{{ $anggota->created_at ? $anggota->created_at->format('d-m-Y H:i') : '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Terakhir Diupdate</th>
+                            <td>{{ $anggota->updated_at ? $anggota->updated_at->format('d-m-Y H:i') : '-' }}</td>
                         </tr>
                     </tbody>
                 </table>
-                <a href="{{ route('nasabah') }}" class="btn btn-secondary">Kembali</a>
+                <a href="{{ route('nasabah.index') }}" class="btn btn-secondary mt-3">Kembali</a>
             </div>
         </div>
     </div>
 </div>
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('.custom-alert').forEach(a => new bootstrap.Alert(a).close());
+    }, 5000);
+</script>
 @endsection

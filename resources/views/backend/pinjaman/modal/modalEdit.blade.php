@@ -1,101 +1,121 @@
 <!-- Edit Pinjaman Modal -->
-<div class="modal fade" id="editPinjaman" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Pinjaman</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="card text-center">
-                    <div class="card-header">Informasi</div>
-                    <div class="card-body">
-                        Jumlah maksimal pinjaman baru adalah Rp {{ number_format($maxPinjamanBaru, 0, ',', '.') }}.
-                    </div>
-                </div>
-                <br>
-                <form method="POST" action="" class="form-edit" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-                    <div class="form-group">
-                        <label for="edit_tanggal_pinjam">Tanggal Pinjam</label>
-                        <input type="text" class="form-control @error('tanggal_pinjam') is-invalid @enderror" id="edit_tanggal_pinjam" name="tanggal_pinjam" readonly>
-                        @error('tanggal_pinjam')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_jml_cicilan">Lama/bulan</label>
-                        <input type="number" class="form-control @error('jml_cicilan') is-invalid @enderror edit_jml_cicilan" id="edit_jml_cicilan" name="jml_cicilan" required>
-                        @error('jml_cicilan')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_jatuh_tempo">Jatuh Tempo</label>
-                        <input type="text" class="form-control @error('jatuh_tempo') is-invalid @enderror" id="edit_jatuh_tempo" name="jatuh_tempo" readonly>
-                        @error('jatuh_tempo')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_jml_pinjam">Jumlah Pinjam</label>
-                        <input type="number" class="form-control @error('jml_pinjam') is-invalid @enderror" id="edit_jml_pinjam" name="jml_pinjam" required>
-                        @error('jml_pinjam')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-success">Simpan</button>
-                    </div>
-                </form>
-            </div>
+<div class="modal fade" id="editPinjaman" tabindex="-1" aria-labelledby="editPinjamanLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content shadow">
+      <form method="POST" action="" class="form-edit-pinjaman">
+        @csrf
+        @method('PUT')
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title" id="editPinjamanLabel">
+            <i class="fas fa-edit me-2"></i>Edit Pinjaman
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+        <div class="modal-body bg-light">
+          <div class="alert alert-info text-center mb-3 shadow-sm">
+            Batas maksimal pinjaman baru:
+            <span class="fw-bold text-primary">Rp {{ number_format($maxPinjamanBaru,0,',','.') }}</span>
+          </div>
+          {{-- Tanggal Pinjam (readonly) --}}
+          <div class="form-floating mb-3">
+            <input type="date" class="form-control" id="edit_tanggal_pinjam" name="tanggal_pinjam" readonly>
+            <label for="edit_tanggal_pinjam">Tanggal Pinjam</label>
+          </div>
+          {{-- Tenor (bulan) --}}
+          <div class="form-floating mb-3">
+            <input type="number" class="form-control @error('tenor') is-invalid @enderror"
+                   id="edit_tenor" name="tenor" min="1" required>
+            <label for="edit_tenor">Tenor (bulan)</label>
+            @error('tenor')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+          {{-- Jatuh Tempo (auto) --}}
+          <div class="form-floating mb-3">
+            <input type="date" class="form-control @error('jatuh_tempo') is-invalid @enderror"
+                   id="edit_jatuh_tempo" name="jatuh_tempo" readonly>
+            <label for="edit_jatuh_tempo">Jatuh Tempo</label>
+            @error('jatuh_tempo')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+          {{-- Jumlah Pinjam --}}
+          <div class="form-floating mb-3">
+            <input type="number" class="form-control @error('jumlah_pinjam') is-invalid @enderror"
+                   id="edit_jumlah_pinjam" name="jumlah_pinjam" min="0.01" step="0.01" required>
+            <label for="edit_jumlah_pinjam">Jumlah Pinjam</label>
+            @error('jumlah_pinjam')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+          {{-- Bunga (%) --}}
+          <div class="form-floating mb-3">
+            <input type="number" class="form-control @error('bunga') is-invalid @enderror"
+                   id="edit_bunga" name="bunga" min="0" step="0.01" required>
+            <label for="edit_bunga">Bunga (%)</label>
+            @error('bunga')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+          {{-- Anggota --}}
+          <div class="form-floating mb-3">
+            <select class="form-select @error('anggota_id') is-invalid @enderror"
+                    id="edit_anggota_id" name="anggota_id" required>
+              <option value="">-- Pilih Anggota --</option>
+              @foreach($anggota as $m)
+                <option value="{{ $m->id }}">{{ $m->name }}</option>
+              @endforeach
+            </select>
+            <label for="edit_anggota_id">Anggota</label>
+            @error('anggota_id')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i> Batal
+          </button>
+          <button type="submit" class="btn btn-success rounded-pill">
+            <i class="fas fa-save"></i> Simpan
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var editPinjamanModal = document.getElementById('editPinjaman');
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('editPinjaman');
+  modal.addEventListener('show.bs.modal', event => {
+    const btn = event.relatedTarget;
+    const id = btn.getAttribute('data-id');
+    const tanggal = btn.getAttribute('data-tanggal_pinjam');
+    const jumlah = btn.getAttribute('data-jumlah_pinjam');
+    const tenor = btn.getAttribute('data-tenor');
+    const jatuhTempo = btn.getAttribute('data-jatuh_tempo');
+    const bunga = btn.getAttribute('data-bunga');
+    const anggotaId = btn.getAttribute('data-anggota_id');
+    const form = modal.querySelector('form.form-edit-pinjaman');
 
-        editPinjamanModal.addEventListener('show.bs.modal', function(event) {
-            var button = event.relatedTarget;
-            var id = button.getAttribute('data-id');
-            var tanggal_pinjam = button.getAttribute('data-tanggal_pinjam');
-            var jml_pinjam = button.getAttribute('data-jml_pinjam');
-            var jml_cicilan = button.getAttribute('data-jml_cicilan');
-            var jatuh_tempo = button.getAttribute('data-jatuh_tempo');
-            var formEdit = editPinjamanModal.querySelector('.form-edit');
+    form.action = `/pinjaman/${id}`;
+    form.querySelector('#edit_tanggal_pinjam').value = tanggal;
+    form.querySelector('#edit_jumlah_pinjam').value = jumlah;
+    form.querySelector('#edit_tenor').value = tenor;
+    form.querySelector('#edit_jatuh_tempo').value = jatuhTempo;
+    form.querySelector('#edit_bunga').value = bunga;
+    form.querySelector('#edit_anggota_id').value = anggotaId;
 
-            formEdit.setAttribute('action', `/pinjaman/${id}`);
-            formEdit.querySelector('#edit_tanggal_pinjam').value = tanggal_pinjam;
-            formEdit.querySelector('#edit_jml_pinjam').value = jml_pinjam;
-            formEdit.querySelector('#edit_jml_cicilan').value = jml_cicilan;
-            formEdit.querySelector('#edit_jatuh_tempo').value = jatuh_tempo;
-
-            // Calculate new jatuh tempo based on jml_cicilan
-            formEdit.querySelector('#edit_jml_cicilan').addEventListener('input', function() {
-                var tanggalPinjamValue = new Date(tanggal_pinjam);
-                var lamaCicilan = parseInt(this.value, 10);
-
-                if (!isNaN(lamaCicilan) && tanggalPinjamValue) {
-                    var newJatuhTempo = new Date(tanggalPinjamValue);
-                    newJatuhTempo.setMonth(tanggalPinjamValue.getMonth() + lamaCicilan);
-                    var formattedJatuhTempo = newJatuhTempo.toISOString().split('T')[0];
-                    formEdit.querySelector('#edit_jatuh_tempo').value = formattedJatuhTempo;
-                } else {
-                    formEdit.querySelector('#edit_jatuh_tempo').value = '';
-                }
-            });
-        });
+    // recalc jatuh tempo if tenor changes
+    form.querySelector('#edit_tenor').addEventListener('input', e => {
+      const t0 = new Date(tanggal);
+      const t1 = parseInt(e.target.value, 10);
+      if (!isNaN(t1)) {
+        t0.setMonth(t0.getMonth() + t1);
+        form.querySelector('#edit_jatuh_tempo').value = t0.toISOString().slice(0,10);
+      }
     });
+  });
+});
 </script>

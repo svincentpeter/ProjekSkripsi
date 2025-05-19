@@ -1,107 +1,112 @@
 <!-- The Modal -->
-<div class="modal fade" id="buatAnggota" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Nasabah</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade" id="buatAnggota" tabindex="-1" aria-labelledby="buatAnggotaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="buatAnggotaLabel">Tambah Nasabah</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{{ route('nasabah.store') }}" enctype="multipart/form-data">
+        @csrf
+        <div class="modal-body">
+          <div class="row">
+            {{-- Nama & NIP --}}
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <input type="text" name="name" id="name"
+                       value="{{ old('name') }}"
+                       class="form-control @error('name') is-invalid @enderror">
+                <label for="name">Nama</label>
+                @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" name="nip" id="nip"
+                       value="{{ old('nip') }}"
+                       class="form-control @error('nip') is-invalid @enderror">
+                <label for="nip">NIP</label>
+                @error('nip') <div class="invalid-feedback">{{ $message }}</div> @enderror
+              </div>
+
+              {{-- Telepon & Tanggal Lahir --}}
+              <div class="form-floating mb-3">
+                <input type="tel" name="telphone" id="telphone"
+                       value="{{ old('telphone') }}"
+                       class="form-control @error('telphone') is-invalid @enderror">
+                <label for="telphone">Telepon</label>
+                @error('telphone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+              </div>
+              <div class="form-floating mb-3">
+                <input type="date" name="tgl_lahir" id="tgl_lahir"
+                       value="{{ old('tgl_lahir') }}"
+                       class="form-control @error('tgl_lahir') is-invalid @enderror">
+                <label for="tgl_lahir">Tanggal Lahir</label>
+                @error('tgl_lahir') <div class="invalid-feedback">{{ $message }}</div> @enderror
+              </div>
             </div>
 
-            <div class="modal-body">
-                <form method="POST" action="{{ route('storeNasabah') }}" enctype="multipart/form-data">
-                    @csrf
-                    <div class="row">
-                        <!-- Form Fields -->
-                        <div class="col-md-4">
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" value="{{ old('nama')}}" id="nama" name="nama">
-                                <label for="nama">Nama</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="email" class="form-control" value="{{ old('email')}}" id="email" name="email">
-                                <label for="email">Email</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="password" class="form-control" id="password" name="password">
-                                <label for="password">Password</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="number" class="form-control" value="{{ old('nip')}}" id="nip" name="nip">
-                                <label for="nip">No KTP</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="tel" class="form-control" value="{{ old('telphone')}}" id="telphone" name="telphone">
-                                <label for="telphone">Telepon</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-floating mb-3">
-                                <input type="date" class="form-control" value="{{ old('tgl_lahir')}}" id="tgl_lahir" name="tgl_lahir">
-                                <label for="tgl_lahir">Tanggal Lahir</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <textarea class="form-control" id="alamat" name="alamat" style="height: 100px">{{ old('alamat')}}</textarea>
-                                <label for="alamat">Alamat</label>
-                            </div>
-                            <div class="mb-3">
-                                <label for="agama" class="form-label">Agama</label>
-                                <select id="agama" name="agama" class="form-select">
-                                    <option value="" selected disabled>Pilih Agama</option>
-                                    <option value="Islam" {{ old('agama') == 'Islam' ? 'selected' : '' }}>Islam</option>
-                                    <option value="Kristen" {{ old('agama') == 'Kristen' ? 'selected' : '' }}>Kristen</option>
-                                    <option value="Katolik" {{ old('agama') == 'Katolik' ? 'selected' : '' }}>Katolik</option>
-                                    <option value="Hindu" {{ old('agama') == 'Hindu' ? 'selected' : '' }}>Hindu</option>
-                                    <option value="Buddha" {{ old('agama') == 'Buddha' ? 'selected' : '' }}>Buddha</option>
-                                    <option value="Konghucu" {{ old('agama') == 'Konghucu' ? 'selected' : '' }}>Konghucu</option>
-                                </select>
-                                @error('agama')
-                                <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
+            {{-- Alamat & Pekerjaan --}}
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <textarea name="alamat" id="alamat" rows="3"
+                          class="form-control @error('alamat') is-invalid @enderror">{{ old('alamat') }}</textarea>
+                <label for="alamat">Alamat</label>
+                @error('alamat') <div class="invalid-feedback">{{ $message }}</div> @enderror
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" name="pekerjaan" id="pekerjaan"
+                       value="{{ old('pekerjaan') }}"
+                       class="form-control @error('pekerjaan') is-invalid @enderror">
+                <label for="pekerjaan">Pekerjaan</label>
+                @error('pekerjaan') <div class="invalid-feedback">{{ $message }}</div> @enderror
+              </div>
 
-                            <div class="mb-3">
-                                <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
-                                <select id="jenis_kelamin" name="jenis_kelamin" class="form-select">
-                                    <option value="" selected disabled>Pilih Jenis Kelamin</option>
-                                    <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
-                                    <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
-                                </select>
-                                @error('jenis_kelamin')
-                                <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" value="{{ old('pekerjaan')}}" id="pekerjaan" name="pekerjaan">
-                                <label for="pekerjaan">Pekerjaan</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="date" class="form-control" value="{{ old('tgl_gabung')}}" id="tgl_gabung" name="tgl_gabung">
-                                <label for="tgl_gabung">Tanggal Gabung</label>
-                            </div>
-                            <div class="mb-3">
-                                <label for="image" class="form-label">Masukkan Foto</label>
-                                <input class="form-control form-control-sm" id="image" name="image" accept="image/*" type="file">
-                                @error('image')
-                                <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                                <img id="image-preview" src="#" alt="Image Preview" style="display: none; max-width: 50%; height: auto; margin-top: 10px;">
-                                <div id="crop-container" style="width: 100%; max-height: 70vh; overflow: hidden; display: none;">
-                                    <img id="crop-image" src="#" alt="Crop Image" style="max-width: 100%; height: auto;">
-                                </div>
-                                <button type="button" class="btn btn-secondary mt-2" id="crop-button" style="display: none;">Crop Image</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary  " data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-success  ">Simpan</button>
-                    </div>
-                </form>
+              {{-- Agama & Jenis Kelamin --}}
+              <div class="mb-3">
+                <label for="agama" class="form-label">Agama</label>
+                <select name="agama" id="agama"
+                        class="form-select @error('agama') is-invalid @enderror">
+                  <option value="" disabled selected>Pilih Agama</option>
+                  <option value="Islam"     {{ old('agama')=='Islam'? 'selected':'' }}>Islam</option>
+                  <option value="Kristen"   {{ old('agama')=='Kristen'? 'selected':'' }}>Kristen</option>
+                  <option value="Katolik"   {{ old('agama')=='Katolik'? 'selected':'' }}>Katolik</option>
+                  <option value="Hindu"     {{ old('agama')=='Hindu'? 'selected':'' }}>Hindu</option>
+                  <option value="Buddha"    {{ old('agama')=='Buddha'? 'selected':'' }}>Buddha</option>
+                  <option value="Konghucu"  {{ old('agama')=='Konghucu'?'selected':'' }}>Konghucu</option>
+                </select>
+                @error('agama') <div class="text-danger">{{ $message }}</div> @enderror
+              </div>
+              <div class="mb-3">
+                <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
+                <select name="jenis_kelamin" id="jenis_kelamin"
+                        class="form-select @error('jenis_kelamin') is-invalid @enderror">
+                  <option value="" disabled selected>Pilih Jenis Kelamin</option>
+                  <option value="L" {{ old('jenis_kelamin')=='L'? 'selected':'' }}>Laki-Laki</option>
+                  <option value="P" {{ old('jenis_kelamin')=='P'? 'selected':'' }}>Perempuan</option>
+                </select>
+                @error('jenis_kelamin') <div class="text-danger">{{ $message }}</div> @enderror
+              </div>
             </div>
+
+            {{-- Foto --}}
+            <div class="col-12">
+              <label for="image" class="form-label">Foto (opsional)</label>
+              <input type="file" name="image" id="image"
+                     class="form-control @error('image') is-invalid @enderror"
+                     accept="image/*">
+              @error('image') <div class="text-danger">{{ $message }}</div> @enderror
+            </div>
+
+          </div>
         </div>
+        <div class="modal-footer">
+          <button type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal">Tutup</button>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
 
 <script>

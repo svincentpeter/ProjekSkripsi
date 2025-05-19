@@ -6,36 +6,35 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+    public function up(): void
     {
         Schema::create('pinjaman', function (Blueprint $table) {
             $table->id();
-            $table->string('kodeTransaksiPinjaman');
-            $table->foreignId('id_anggota')->references('id')->on('_anggota')->onDelete('cascade');
-            $table->string('tanggal_pinjam');
-            $table->string('jatuh_tempo');
-            $table->integer('jml_pinjam');
-            $table->integer('bunga_pinjam');
-            $table->string('jml_cicilan');
-            $table->string('status_pengajuan');
-            $table->string('keterangan_ditolak_pengajuan');
-            $table->foreignId('created_by')->notNull()->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('updated_by')->notNull()->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('kode_transaksi')->unique();
+            $table->foreignId('anggota_id')
+                  ->constrained('anggota')
+                  ->cascadeOnUpdate()
+                  ->cascadeOnDelete();
+            $table->date('tanggal_pinjam');
+            $table->date('jatuh_tempo');
+            $table->decimal('jumlah_pinjam', 12, 2);
+            $table->decimal('bunga', 5, 2);
+            $table->unsignedSmallInteger('tenor');
+            $table->enum('status', ['PENDING', 'DISETUJUI', 'DITOLAK'])->default('PENDING');
+            $table->text('keterangan_ditolak')->nullable();
+            $table->foreignId('created_by')
+                  ->constrained('users')
+                  ->cascadeOnUpdate()
+                  ->restrictOnDelete();
+            $table->foreignId('updated_by')
+                  ->constrained('users')
+                  ->cascadeOnUpdate()
+                  ->restrictOnDelete();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('pinjaman');
     }

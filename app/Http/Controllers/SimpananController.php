@@ -5,387 +5,279 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SimpananRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-// use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class SimpananController extends Controller
 {
-    // public function index()
-    // {
-    //     $simpanan = DB::table('simpanan')->select(
-    //         'simpanan.*',
-    //         '_anggota.name as nama_anggota'
-    //     )
-    //         ->orderBy('_anggota.id', 'DESC')
-    //         ->join('simpanan', 'simpanan.id', '_anggota.nama_anggota')
-    //         ->paginate(5);
-
-    //     return view('backend.simpanan.index', compact('simpanan'));
-    // }
-
     public function index(Request $request)
     {
         $startDate = $request->get('start_date');
-        $endDate = $request->get('end_date');
-        $search = $request->get('search');
+        $endDate   = $request->get('end_date');
+        $search    = $request->get('search');
 
         $query = DB::table('simpanan')
-            ->select(
+            ->select([
                 'simpanan.id as simpanan_id',
-                'simpanan.kodeTransaksiSimpanan',
+                'simpanan.kode_transaksi',
                 'simpanan.tanggal_simpanan',
-                'simpanan.jml_simpanan',
+                'simpanan.jumlah_simpanan',
                 'jenis_simpanan.nama as jenis_simpanan_nama',
                 'users.name as created_by_name',
-                '_anggota.name as anggota_name'
-            )
-            ->join('users', 'users.id', '=', 'simpanan.created_by')
-            ->join('_anggota', '_anggota.id', '=', 'simpanan.id_anggota')
-            ->join('jenis_simpanan', 'jenis_simpanan.id', '=', 'simpanan.id_jenis_simpanan');
+                'anggota.name as anggota_name',
+            ])
+            ->join('users',          'users.id',             '=', 'simpanan.created_by')
+            ->join('anggota',        'anggota.id',           '=', 'simpanan.anggota_id')
+            ->join('jenis_simpanan', 'jenis_simpanan.id',    '=', 'simpanan.jenis_simpanan_id');
 
         if ($startDate && $endDate) {
             $query->whereBetween('simpanan.tanggal_simpanan', [$startDate, $endDate]);
         }
 
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('simpanan.kodeTransaksiSimpanan', 'LIKE', "%$search%")
-                    ->orWhere('_anggota.name', 'LIKE', "%$search%");
+            $term = "%{$search}%";
+            $query->where(function($q) use($term) {
+                $q->where('simpanan.kode_transaksi', 'like', $term)
+                  ->orWhere('anggota.name',           'like', $term);
             });
         }
 
-        $simpanan = $query->orderBy('simpanan.id', 'DESC')->paginate(5);
-        $namaNasabah = DB::table('_anggota')->select('id', 'name')->get();
-        $jenisSimpanan = DB::table('jenis_simpanan')->select('id', 'nama')->get();
+        $simpanan    = $query->orderByDesc('simpanan.id')->paginate(5);
+        $anggotaList = DB::table('anggota')->select('id', 'name')->get();
+        $jenisList   = DB::table('jenis_simpanan')->select('id', 'nama')->get();
 
-        // Mendapatkan nomor transaksi terakhir
-        $lastTransaction = DB::table('simpanan')
-        ->where('kodeTransaksiSimpanan', 'LIKE', 'SMP-%')
-            ->orderBy('kodeTransaksiSimpanan', 'desc')
+        // Generate kode transaksi otomatis
+        $last = DB::table('simpanan')
+            ->where('kode_transaksi', 'like', 'SMP-%')
+            ->orderByDesc('kode_transaksi')
             ->first();
+        $nextNumber    = $last ? ((int) substr($last->kode_transaksi, 4)) + 1 : 1;
+        $kodeTransaksi = 'SMP-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-        // Menentukan nomor urut simpanan baru
-        $newTransactionNumber = $lastTransaction ? (int) substr($lastTransaction->kodeTransaksiSimpanan, 4) + 1 : 1;
-
-        // Membuat kode simpanan baru
-        $kodeTransaksiSimpanan = 'SMP-' . str_pad($newTransactionNumber, 4, '0', STR_PAD_LEFT);
-
-        return view('backend.simpanan.index', compact('simpanan', 'startDate', 'endDate', 'search','namaNasabah', 'kodeTransaksiSimpanan', 'jenisSimpanan'));
+        return view('backend.simpanan.index', compact(
+            'simpanan', 'startDate', 'endDate', 'search',
+            'anggotaList', 'jenisList', 'kodeTransaksi'
+        ));
     }
-
 
     public function create()
     {
-        $namaNasabah = DB::table('_anggota')->select('id', 'name')->get();
-        $jenisSimpanan = DB::table('jenis_simpanan')->select('id', 'nama')->get();
+        $anggotaList = DB::table('anggota')->select('id', 'name')->get();
+        $jenisList   = DB::table('jenis_simpanan')->select('id', 'nama')->get();
 
-        // Mendapatkan nomor transaksi terakhir
-        $lastTransaction = DB::table('simpanan')
-            ->where('kodeTransaksiSimpanan', 'LIKE', 'SMP-%')
-            ->orderBy('kodeTransaksiSimpanan', 'desc')
+        // Generate kode transaksi
+        $last = DB::table('simpanan')
+            ->where('kode_transaksi', 'like', 'SMP-%')
+            ->orderByDesc('kode_transaksi')
             ->first();
+        $nextNumber    = $last ? ((int) substr($last->kode_transaksi, 4)) + 1 : 1;
+        $kodeTransaksi = 'SMP-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-        // Menentukan nomor urut simpanan baru
-        $newTransactionNumber = $lastTransaction ? (int) substr($lastTransaction->kodeTransaksiSimpanan, 4) + 1 : 1;
-
-        // Membuat kode simpanan baru
-        $kodeTransaksiSimpanan = 'SMP-' . str_pad($newTransactionNumber, 4, '0', STR_PAD_LEFT);
-
-        return view('backend.simpanan.create', compact('namaNasabah', 'kodeTransaksiSimpanan', 'jenisSimpanan'));
+        return view('backend.simpanan.create', compact(
+            'anggotaList', 'jenisList', 'kodeTransaksi'
+        ));
     }
 
+    // STORE: Perhatikan field pada $request harus sama dengan form name
     public function store(SimpananRequest $request)
     {
-        try {
-            // Cek jenis simpanan yang dipilih
-            $jenisSimpanan = DB::table('jenis_simpanan')
-                ->where('id', $request->id_jenis_simpanan)
+        DB::transaction(function() use($request) {
+            // Kode transaksi tetap digenerate, walaupun sudah dari form (bisa diambil dari $request->kode_transaksi juga)
+            $last = DB::table('simpanan')
+                ->where('kode_transaksi', 'like', 'SMP-%')
+                ->orderByDesc('kode_transaksi')
                 ->first();
+            $nextNumber    = $last ? ((int) substr($last->kode_transaksi, 4)) + 1 : 1;
+            $kodeTransaksi = 'SMP-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-            // Validasi jika jenis simpanan tidak ditemukan
-            if (!$jenisSimpanan) {
-                return redirect()->back()->withErrors(['id_jenis_simpanan' => 'Jenis simpanan tidak valid.']);
+            // Upload file bukti pembayaran
+            $bukti = null;
+            if ($request->hasFile('bukti_pembayaran')) {
+                $file   = $request->file('bukti_pembayaran');
+                $bukti  = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('assets/img'), $bukti);
             }
 
-            // Inisialisasi variabel jumlah simpanan
-            $jml_simpanan = $request->jml_simpanan;
+            // Insert data
+            DB::table('simpanan')->insert([
+                'kode_transaksi'      => $kodeTransaksi,
+                'tanggal_simpanan'    => $request->tanggal_simpanan,
+                'anggota_id'          => $request->anggota_id,
+                'jenis_simpanan_id'   => $request->jenis_simpanan_id,
+                'jumlah_simpanan'     => $request->jumlah_simpanan,
+                'bukti_pembayaran'    => $bukti ? 'assets/img/' . $bukti : null,
+                'created_by'          => Auth::id(),
+                'updated_by'          => Auth::id(),
+                'created_at'          => now(),
+                'updated_at'          => now(),
+            ]);
 
-            // Jika jenis simpanan adalah simpanan pokok (ID 1)
-            if ($jenisSimpanan->id == 1) {
-                // Cek apakah anggota sudah memiliki simpanan pokok
-                $existingSimpananPokok = DB::table('simpanan')
-                ->where('id_anggota', $request->id_anggota)
-                ->where('id_jenis_simpanan', 1) // ID 1 adalah simpanan pokok
-                    ->exists();
+            // Update saldo anggota
+            $total = DB::table('simpanan')
+                ->where('anggota_id', $request->anggota_id)
+                ->sum('jumlah_simpanan');
 
-                if ($existingSimpananPokok) {
-                    return redirect()->back()->withErrors(['id_jenis_simpanan' => 'Anggota sudah memiliki simpanan pokok.']);
-                }
-
-                // Set nominal simpanan pokok menjadi 250.000
-                $jml_simpanan = 250000;
-            }
-            // Jika jenis simpanan adalah simpanan wajib (ID 2)
-            elseif ($jenisSimpanan->id == 2) {
-                // Cek apakah anggota sudah memiliki simpanan wajib
-                $existingSimpananWajib = DB::table('simpanan')
-                ->where('id_anggota', $request->id_anggota)
-                ->where('id_jenis_simpanan', 2) // ID 2 adalah simpanan wajib
-                    ->exists();
-
-                if (!$existingSimpananWajib) {
-                    // Simpan simpanan wajib hanya jika belum ada
-                    $jml_simpanan = 20000;
-
-                    // Upload bukti pembayaran
-                    $image = $request->file('bukti_pembayaran');
-                    $imageName = time() . '.' . $image->getClientOriginalExtension();
-                    $image->move(public_path('assets/img'), $imageName);
-
-                    // Simpan data simpanan dalam transaksi
-                    DB::transaction(function () use ($request, $imageName, $jml_simpanan) {
-                        // Insert simpanan wajib
-                        DB::table('simpanan')->insert([
-                            'kodeTransaksiSimpanan' => $request->kodeTransaksiSimpanan,
-                            'tanggal_simpanan' => $request->tanggal_simpanan,
-                            'id_anggota' => $request->id_anggota,
-                            'id_jenis_simpanan' => 2, // ID 2 adalah simpanan wajib
-                            'jml_simpanan' => $jml_simpanan,
-                            'bukti_pembayaran' => $imageName,
-                            'created_by' => auth()->id(),
-                            'updated_by' => auth()->id(),
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
-
-                        // Hitung total simpanan anggota
-                        $totalSimpanan = DB::table('simpanan')
-                            ->where('id_anggota', $request->id_anggota)
-                            ->sum('jml_simpanan');
-
-                        // Update saldo anggota dengan total simpanan dan ubah status anggota jika saldo > 0
-                        DB::table('_anggota')
-                            ->where('id', $request->id_anggota)
-                            ->update([
-                                'saldo' => $totalSimpanan,
-                                'status_anggota' => $totalSimpanan > 0 ? 1 : 0,
-                            ]);
-
-                        // Update atau insert ke tabel total_saldo_anggota
-                        DB::table('total_saldo_anggota')->updateOrInsert(
-                            [],
-                            ['gradesaldo' => $totalSimpanan, 'updated_at' => now()]
-                        );
-                    });
-                }
-            }
-
-            // Upload bukti pembayaran
-            $image = $request->file('bukti_pembayaran');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('assets/img'), $imageName);
-
-            // Simpan data simpanan dalam transaksi
-            DB::transaction(function () use ($request, $imageName, $jml_simpanan) {
-                // Insert simpanan
-                DB::table('simpanan')->insert([
-                    'kodeTransaksiSimpanan' => $request->kodeTransaksiSimpanan,
-                    'tanggal_simpanan' => $request->tanggal_simpanan,
-                    'id_anggota' => $request->id_anggota,
-                    'id_jenis_simpanan' => $request->id_jenis_simpanan,
-                    'jml_simpanan' => $jml_simpanan,
-                    'bukti_pembayaran' => 'assets/img/' . $imageName,
-                    'created_by' => auth()->id(),
-                    'updated_by' => auth()->id(),
-                    'created_at' => now(),
-                    'updated_at' => now(),
+            DB::table('anggota')
+                ->where('id', $request->anggota_id)
+                ->update([
+                    'saldo'           => $total,
+                    'status_anggota'  => $total > 0 ? '1' : '0',
                 ]);
 
-                // Hitung total simpanan anggota
-                $totalSimpanan = DB::table('simpanan')
-                ->where('id_anggota', $request->id_anggota)
-                    ->sum('jml_simpanan');
+            // Update total_saldo_anggota
+            DB::table('total_saldo_anggota')->updateOrInsert(
+                ['anggota_id' => $request->anggota_id],
+                ['gradesaldo'  => $total, 'updated_at' => now()]
+            );
+        });
 
-                // Update saldo anggota dengan total simpanan dan ubah status anggota jika saldo > 0
-                DB::table('_anggota')
-                    ->where('id', $request->id_anggota)
-                    ->update([
-                        'saldo' => $totalSimpanan,
-                        'status_anggota' => $totalSimpanan > 0 ? 1 : 0,
-                    ]);
-            });
-
-            return redirect()->route('simpanan')->with('message', 'Data Simpanan Berhasil Disimpan');
-        } catch (\Exception $e) {
-            DB::rollback();
-            return redirect()->route('simpanan')->with('error', 'Gagal menyimpan data: ' . $e->getMessage())->withErrors($e->getMessage());
-        }
+        return redirect()->route('simpanan.index')
+                         ->with('message', 'Data Simpanan Berhasil Disimpan');
     }
-
 
     public function show($id)
     {
-        // dd($id); 
-        $detailSimpanan = DB::table('simpanan')
-            ->select(
-                'simpanan.jml_simpanan as jmlh',
-                'simpanan.kodeTransaksiSimpanan as kode',
+        $detail = DB::table('simpanan')
+            ->select([
+                'simpanan.id',
+                'simpanan.kode_transaksi as kode',
                 'simpanan.tanggal_simpanan as tgl',
+                'simpanan.jumlah_simpanan as jmlh',
                 'simpanan.bukti_pembayaran as bukti',
                 'users_created.name as created_by',
                 'users_updated.name as updated_by',
-                '_anggota.name as anggota_name',
-                '_anggota.nip as anggota_nip',
-                '_anggota.image as anggota_image',
-                '_anggota.telphone as anggota_telphone',
-                '_anggota.alamat as anggota_alamat',
-                '_anggota.pekerjaan as anggota_pekerjaan',
-                '_anggota.agama as anggota_agama',
-                'jenis_simpanan.nama as jenis_simpanan_nama'
-            )
-            ->join('_anggota', '_anggota.id', '=', 'simpanan.id_anggota')
-            ->join('jenis_simpanan', 'jenis_simpanan.id', '=', 'simpanan.id_jenis_simpanan')
+                'anggota.name as anggota_name',
+                'anggota.nip as anggota_nip',
+                'anggota.image as anggota_image',
+                'anggota.telphone as anggota_telphone',
+                'anggota.alamat as anggota_alamat',
+                'anggota.pekerjaan as anggota_pekerjaan',
+                'anggota.agama as anggota_agama',
+                'jenis_simpanan.nama as jenis_simpanan_nama',
+            ])
+            ->join('anggota',        'anggota.id',         '=', 'simpanan.anggota_id')
+            ->join('jenis_simpanan', 'jenis_simpanan.id',  '=', 'simpanan.jenis_simpanan_id')
             ->join('users as users_created', 'users_created.id', '=', 'simpanan.created_by')
             ->leftJoin('users as users_updated', 'users_updated.id', '=', 'simpanan.updated_by')
             ->where('simpanan.id', $id)
             ->first();
 
-        // dd($detailSimpanan);
-
-        return view('backend.simpanan.show', compact('detailSimpanan'));
+        return view('backend.simpanan.show', ['detailSimpanan' => $detail]);
     }
-
 
     public function edit($id)
     {
-        $simpanedit = DB::table('simpanan')->where('id', $id)->first();
-        if (!$simpanedit) {
-            return redirect()->route('simpanan')->with('error', 'Barang tidak ditemukan.');
+        $item = DB::table('simpanan')->find($id);
+        if (!$item) {
+            return redirect()->route('simpanan.index')
+                             ->with('error', 'Data tidak ditemukan.');
         }
-        $namaNasabah = DB::table('_anggota')->get();
+        $anggotaList = DB::table('anggota')->select('id', 'name')->get();
+        $jenisList   = DB::table('jenis_simpanan')->select('id', 'nama')->get();
 
-        $jenisSimpanan = DB::table('jenis_simpanan')->get();
-        session(['simpanan.edit' => $simpanedit]);
-        return view('backend.simpanan.edit', compact('simpanedit', 'namaNasabah', 'jenisSimpanan'));
+        return view('backend.simpanan.edit', compact('item', 'anggotaList', 'jenisList'));
     }
 
     public function update(Request $request, $id)
     {
-        // Validasi input
         $request->validate([
-            'id_anggota' => 'required|exists:_anggota,id',
-            'id_jenis_simpanan' => 'required|exists:jenis_simpanan,id',
-            'jml_simpanan' => 'required|numeric',
-            'bukti_pembayaran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'anggota_id'          => 'required|exists:anggota,id',
+            'jenis_simpanan_id'   => 'required|exists:jenis_simpanan,id',
+            'jumlah_simpanan'     => 'required|numeric',
+            'bukti_pembayaran'    => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        // Data untuk diperbarui
         $data = [
-            'id_anggota' => $request->id_anggota,
-            'id_jenis_simpanan' => $request->id_jenis_simpanan,
-            'jml_simpanan' => $request->jml_simpanan,
-            'updated_by' => auth()->user()->id,
-            'updated_at' => now(),
+            'anggota_id'         => $request->anggota_id,
+            'jenis_simpanan_id'  => $request->jenis_simpanan_id,
+            'jumlah_simpanan'    => $request->jumlah_simpanan,
+            'updated_by'         => Auth::id(),
+            'updated_at'         => now(),
         ];
 
-        // Cek jika ada file bukti pembayaran yang diunggah
         if ($request->hasFile('bukti_pembayaran')) {
-            // Ambil data simpanan lama
-            $oldData = DB::table('simpanan')->where('id', $id)->first();
-
-            // Hapus file lama jika ada
-            if ($oldData && $oldData->bukti_pembayaran) {
-                $oldFilePath = public_path($oldData->bukti_pembayaran);
-                if (file_exists($oldFilePath)) {
-                    unlink($oldFilePath);
-                }
+            $old = DB::table('simpanan')->find($id);
+            if ($old && $old->bukti_pembayaran && file_exists(public_path($old->bukti_pembayaran))) {
+                unlink(public_path($old->bukti_pembayaran));
             }
-
-            // Simpan file baru
-            $file = $request->file('bukti_pembayaran');
+            $file     = $request->file('bukti_pembayaran');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('assets/img/'), $filename);
+            $file->move(public_path('assets/img'), $filename);
             $data['bukti_pembayaran'] = 'assets/img/' . $filename;
         }
 
-        // Update data di database
         DB::table('simpanan')->where('id', $id)->update($data);
 
-        // Hitung total simpanan anggota
-        $totalSimpanan = DB::table('simpanan')
-            ->where('id_anggota', $request->id_anggota)
-            ->sum('jml_simpanan');
+        // Recalculate saldo
+        $total = DB::table('simpanan')
+            ->where('anggota_id', $request->anggota_id)
+            ->sum('jumlah_simpanan');
 
-        // Update saldo anggota dengan total simpanan
-        DB::table('_anggota')
-            ->where('id', $request->id_anggota)
-            ->update(['saldo' => $totalSimpanan]);
+        DB::table('anggota')
+            ->where('id', $request->anggota_id)
+            ->update(['saldo' => $total]);
 
-        // Redirect ke halaman simpanan dengan pesan sukses
-        return redirect()->route('simpanan')->with('message', 'Simpanan updated successfully.');
+        return redirect()->route('simpanan.index')
+                         ->with('message', 'Data Simpanan berhasil diperbarui.');
     }
-
 
     public function destroy($id)
     {
-        // Ambil data simpanan
-        $simpanan = DB::table('simpanan')->where('id', $id)->first();
-
-        if (!$simpanan) {
-            return redirect()->route('simpanan')->with('error', 'Simpanan not found.');
+        $item = DB::table('simpanan')->find($id);
+        if (!$item) {
+            return redirect()->route('simpanan.index')
+                             ->with('error', 'Data tidak ditemukan.');
         }
 
-        // Hapus file bukti pembayaran jika ada
-        if ($simpanan->bukti_pembayaran) {
-            $filePath = public_path($simpanan->bukti_pembayaran);
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
+        if ($item->bukti_pembayaran && file_exists(public_path($item->bukti_pembayaran))) {
+            unlink(public_path($item->bukti_pembayaran));
         }
 
-        // Hapus data simpanan dari database
         DB::table('simpanan')->where('id', $id)->delete();
 
-        // Hitung ulang total simpanan anggota
-        $totalSimpanan = DB::table('simpanan')
-            ->where('id_anggota', $simpanan->id_anggota)
-            ->sum('jml_simpanan');
+        // Recalculate saldo
+        $total = DB::table('simpanan')
+            ->where('anggota_id', $item->anggota_id)
+            ->sum('jumlah_simpanan');
 
-        // Update saldo anggota dengan total simpanan
-        DB::table('_anggota')
-            ->where('id', $simpanan->id_anggota)
-            ->update(['saldo' => $totalSimpanan]);
+        DB::table('anggota')
+            ->where('id', $item->anggota_id)
+            ->update(['saldo' => $total]);
 
-        return redirect()->route('simpanan')->with('message', 'Simpanan deleted successfully.');
+        return redirect()->route('simpanan.index')
+                         ->with('message', 'Data Simpanan berhasil dihapus.');
     }
 
     public function cetak(Request $request)
     {
         $startDate = $request->get('start_date');
-        $endDate = $request->get('end_date');
+        $endDate   = $request->get('end_date');
 
         $query = DB::table('simpanan')
-            ->select(
+            ->select([
                 'simpanan.id as simpanan_id',
-                'simpanan.kodeTransaksiSimpanan',
+                'simpanan.kode_transaksi',
                 'simpanan.tanggal_simpanan',
-                'simpanan.jml_simpanan',
+                'simpanan.jumlah_simpanan',
                 'jenis_simpanan.nama as jenis_simpanan_nama',
                 'users.name as created_by_name',
-                '_anggota.name as anggota_name'
-            )
-            ->join('users', 'users.id', '=', 'simpanan.created_by')
-            ->join('_anggota', '_anggota.id', '=', 'simpanan.id_anggota')
-            ->join('jenis_simpanan', 'jenis_simpanan.id', '=', 'simpanan.id_jenis_simpanan');
+                'anggota.name as anggota_name',
+            ])
+            ->join('users',          'users.id',           '=', 'simpanan.created_by')
+            ->join('anggota',        'anggota.id',         '=', 'simpanan.anggota_id')
+            ->join('jenis_simpanan', 'jenis_simpanan.id',  '=', 'simpanan.jenis_simpanan_id');
 
         if ($startDate && $endDate) {
             $query->whereBetween('simpanan.tanggal_simpanan', [$startDate, $endDate]);
         }
 
-        $simpanan = $query->orderBy('simpanan.id', 'DESC')->get();
+        $data = $query->orderByDesc('simpanan.id')->get();
 
-        $pdf = PDF::loadView('backend.laporan.simpanan', compact('simpanan', 'startDate', 'endDate'));
+        $pdf = PDF::loadView('backend.laporan.simpanan', [
+            'simpanan'  => $data,
+            'startDate' => $startDate,
+            'endDate'   => $endDate,
+        ]);
 
         return $pdf->download('laporan_simpanan.pdf');
     }

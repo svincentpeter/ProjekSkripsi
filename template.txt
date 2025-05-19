@@ -1,0 +1,1216 @@
+Oke karena tadi sudah untuk bagian Angsuran sekarang lakukan hal sama ke bagian Penarikan, balik ke analisa dengan prompt ini :
+Disini saya ingin anda berperan sebagai ahli backend dan frontend yang menguasai framework laravel. Disini dihadapkan sebuah projek yang ingin semua hal nya dicek agar semua crud / semua sistem tiap halaman itu dapat berfungsi dengan benar semuanya dan dapat digunakan semuanya.
+
+Pertama disini saya akan memberikan Database yang sudah saya migrasi full :
+-- phpMyAdmin SQL Dump
+-- version 5.2.2
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:3306
+-- Generation Time: May 19, 2025 at 06:31 PM
+-- Server version: 8.0.30
+-- PHP Version: 8.2.26
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `projek_skripsi`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `anggota`
+--
+
+CREATE TABLE `anggota` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED DEFAULT NULL,
+  `nip` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `telphone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `agama` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `jenis_kelamin` enum('L','P') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tgl_lahir` date DEFAULT NULL,
+  `pekerjaan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `alamat` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_anggota` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `saldo` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `created_by` bigint UNSIGNED NOT NULL,
+  `updated_by` bigint UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `angsuran`
+--
+
+CREATE TABLE `angsuran` (
+  `id` bigint UNSIGNED NOT NULL,
+  `kode_transaksi` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pinjaman_id` bigint UNSIGNED NOT NULL,
+  `tanggal_angsuran` date NOT NULL,
+  `jumlah_angsuran` decimal(12,2) NOT NULL,
+  `sisa_pinjam` decimal(12,2) NOT NULL,
+  `cicilan` smallint UNSIGNED NOT NULL,
+  `status` enum('PENDING','LUNAS') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
+  `keterangan` text COLLATE utf8mb4_unicode_ci,
+  `bukti_pembayaran` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bunga_pinjaman` decimal(5,2) NOT NULL,
+  `denda` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `created_by` bigint UNSIGNED NOT NULL,
+  `updated_by` bigint UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cache`
+--
+
+CREATE TABLE `cache` (
+  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiration` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cache_locks`
+--
+
+CREATE TABLE `cache_locks` (
+  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiration` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `failed_jobs`
+--
+
+CREATE TABLE `failed_jobs` (
+  `id` bigint UNSIGNED NOT NULL,
+  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jenis_simpanan`
+--
+
+CREATE TABLE `jenis_simpanan` (
+  `id` bigint UNSIGNED NOT NULL,
+  `nama` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `deskripsi` text COLLATE utf8mb4_unicode_ci,
+  `created_by` bigint UNSIGNED NOT NULL,
+  `updated_by` bigint UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jobs`
+--
+
+CREATE TABLE `jobs` (
+  `id` bigint UNSIGNED NOT NULL,
+  `queue` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `attempts` tinyint UNSIGNED NOT NULL,
+  `reserved_at` int UNSIGNED DEFAULT NULL,
+  `available_at` int UNSIGNED NOT NULL,
+  `created_at` int UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `job_batches`
+--
+
+CREATE TABLE `job_batches` (
+  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `total_jobs` int NOT NULL,
+  `pending_jobs` int NOT NULL,
+  `failed_jobs` int NOT NULL,
+  `failed_job_ids` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `options` mediumtext COLLATE utf8mb4_unicode_ci,
+  `cancelled_at` int DEFAULT NULL,
+  `created_at` int NOT NULL,
+  `finished_at` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `migrations`
+--
+
+CREATE TABLE `migrations` (
+  `id` int UNSIGNED NOT NULL,
+  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `model_has_permissions`
+--
+
+CREATE TABLE `model_has_permissions` (
+  `permission_id` bigint UNSIGNED NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `model_has_roles`
+--
+
+CREATE TABLE `model_has_roles` (
+  `role_id` bigint UNSIGNED NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `password_reset_tokens`
+--
+
+CREATE TABLE `password_reset_tokens` (
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `penarikan`
+--
+
+CREATE TABLE `penarikan` (
+  `id` bigint UNSIGNED NOT NULL,
+  `kode_transaksi` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `anggota_id` bigint UNSIGNED NOT NULL,
+  `tanggal_penarikan` date NOT NULL,
+  `jumlah_penarikan` decimal(12,2) NOT NULL,
+  `keterangan` text COLLATE utf8mb4_unicode_ci,
+  `created_by` bigint UNSIGNED NOT NULL,
+  `updated_by` bigint UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `permissions`
+--
+
+CREATE TABLE `permissions` (
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pinjaman`
+--
+
+CREATE TABLE `pinjaman` (
+  `id` bigint UNSIGNED NOT NULL,
+  `kode_transaksi` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `anggota_id` bigint UNSIGNED NOT NULL,
+  `tanggal_pinjam` date NOT NULL,
+  `jatuh_tempo` date NOT NULL,
+  `jumlah_pinjam` decimal(12,2) NOT NULL,
+  `sisa_pinjam` decimal(15,2) DEFAULT '0.00',
+  `bunga` decimal(5,2) NOT NULL,
+  `tenor` smallint UNSIGNED NOT NULL,
+  `status` enum('PENDING','DISETUJUI','DITOLAK') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
+  `keterangan_ditolak_pengajuan` text COLLATE utf8mb4_unicode_ci,
+  `keterangan_ditolak` text COLLATE utf8mb4_unicode_ci,
+  `created_by` bigint UNSIGNED NOT NULL,
+  `updated_by` bigint UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `riwayat_pinjaman`
+--
+
+CREATE TABLE `riwayat_pinjaman` (
+  `id` bigint UNSIGNED NOT NULL,
+  `pinjaman_id` bigint UNSIGNED NOT NULL,
+  `event` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `old_data` json DEFAULT NULL,
+  `new_data` json DEFAULT NULL,
+  `created_by` bigint UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `roles`
+--
+
+CREATE TABLE `roles` (
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `role_has_permissions`
+--
+
+CREATE TABLE `role_has_permissions` (
+  `permission_id` bigint UNSIGNED NOT NULL,
+  `role_id` bigint UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sessions`
+--
+
+CREATE TABLE `sessions` (
+  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` bigint UNSIGNED DEFAULT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` text COLLATE utf8mb4_unicode_ci,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `last_activity` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `simpanan`
+--
+
+CREATE TABLE `simpanan` (
+  `id` bigint UNSIGNED NOT NULL,
+  `kode_transaksi` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tanggal_simpanan` date NOT NULL,
+  `anggota_id` bigint UNSIGNED NOT NULL,
+  `jenis_simpanan_id` bigint UNSIGNED NOT NULL,
+  `jumlah_simpanan` decimal(12,2) NOT NULL,
+  `bukti_pembayaran` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` bigint UNSIGNED NOT NULL,
+  `updated_by` bigint UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `total_saldo_anggota`
+--
+
+CREATE TABLE `total_saldo_anggota` (
+  `anggota_id` bigint UNSIGNED NOT NULL,
+  `gradesaldo` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email_verified_at` timestamp NULL DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `anggota`
+--
+ALTER TABLE `anggota`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `anggota_nip_unique` (`nip`),
+  ADD KEY `anggota_created_by_foreign` (`created_by`),
+  ADD KEY `anggota_updated_by_foreign` (`updated_by`),
+  ADD KEY `anggota_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `angsuran`
+--
+ALTER TABLE `angsuran`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `angsuran_kode_transaksi_unique` (`kode_transaksi`),
+  ADD KEY `angsuran_pinjaman_id_foreign` (`pinjaman_id`),
+  ADD KEY `angsuran_created_by_foreign` (`created_by`),
+  ADD KEY `angsuran_updated_by_foreign` (`updated_by`);
+
+--
+-- Indexes for table `cache`
+--
+ALTER TABLE `cache`
+  ADD PRIMARY KEY (`key`);
+
+--
+-- Indexes for table `cache_locks`
+--
+ALTER TABLE `cache_locks`
+  ADD PRIMARY KEY (`key`);
+
+--
+-- Indexes for table `failed_jobs`
+--
+ALTER TABLE `failed_jobs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
+
+--
+-- Indexes for table `jenis_simpanan`
+--
+ALTER TABLE `jenis_simpanan`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `jenis_simpanan_nama_unique` (`nama`),
+  ADD KEY `jenis_simpanan_created_by_foreign` (`created_by`),
+  ADD KEY `jenis_simpanan_updated_by_foreign` (`updated_by`);
+
+--
+-- Indexes for table `jobs`
+--
+ALTER TABLE `jobs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `jobs_queue_index` (`queue`);
+
+--
+-- Indexes for table `job_batches`
+--
+ALTER TABLE `job_batches`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `migrations`
+--
+ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `model_has_permissions`
+--
+ALTER TABLE `model_has_permissions`
+  ADD PRIMARY KEY (`permission_id`,`model_id`,`model_type`),
+  ADD KEY `model_has_permissions_model_id_model_type_index` (`model_id`,`model_type`);
+
+--
+-- Indexes for table `model_has_roles`
+--
+ALTER TABLE `model_has_roles`
+  ADD PRIMARY KEY (`role_id`,`model_id`,`model_type`),
+  ADD KEY `model_has_roles_model_id_model_type_index` (`model_id`,`model_type`);
+
+--
+-- Indexes for table `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  ADD PRIMARY KEY (`email`);
+
+--
+-- Indexes for table `penarikan`
+--
+ALTER TABLE `penarikan`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `penarikan_kode_transaksi_unique` (`kode_transaksi`),
+  ADD KEY `penarikan_anggota_id_foreign` (`anggota_id`),
+  ADD KEY `penarikan_created_by_foreign` (`created_by`),
+  ADD KEY `penarikan_updated_by_foreign` (`updated_by`);
+
+--
+-- Indexes for table `permissions`
+--
+ALTER TABLE `permissions`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`);
+
+--
+-- Indexes for table `pinjaman`
+--
+ALTER TABLE `pinjaman`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `pinjaman_kode_transaksi_unique` (`kode_transaksi`),
+  ADD KEY `pinjaman_anggota_id_foreign` (`anggota_id`),
+  ADD KEY `pinjaman_created_by_foreign` (`created_by`),
+  ADD KEY `pinjaman_updated_by_foreign` (`updated_by`);
+
+--
+-- Indexes for table `riwayat_pinjaman`
+--
+ALTER TABLE `riwayat_pinjaman`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `riwayat_pinjaman_pinjaman_id_foreign` (`pinjaman_id`),
+  ADD KEY `riwayat_pinjaman_created_by_foreign` (`created_by`);
+
+--
+-- Indexes for table `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `roles_name_guard_name_unique` (`name`,`guard_name`);
+
+--
+-- Indexes for table `role_has_permissions`
+--
+ALTER TABLE `role_has_permissions`
+  ADD PRIMARY KEY (`permission_id`,`role_id`),
+  ADD KEY `role_has_permissions_role_id_foreign` (`role_id`);
+
+--
+-- Indexes for table `sessions`
+--
+ALTER TABLE `sessions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `sessions_user_id_index` (`user_id`),
+  ADD KEY `sessions_last_activity_index` (`last_activity`);
+
+--
+-- Indexes for table `simpanan`
+--
+ALTER TABLE `simpanan`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `simpanan_kode_transaksi_unique` (`kode_transaksi`),
+  ADD KEY `simpanan_anggota_id_foreign` (`anggota_id`),
+  ADD KEY `simpanan_jenis_simpanan_id_foreign` (`jenis_simpanan_id`),
+  ADD KEY `simpanan_created_by_foreign` (`created_by`),
+  ADD KEY `simpanan_updated_by_foreign` (`updated_by`);
+
+--
+-- Indexes for table `total_saldo_anggota`
+--
+ALTER TABLE `total_saldo_anggota`
+  ADD PRIMARY KEY (`anggota_id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `users_email_unique` (`email`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `anggota`
+--
+ALTER TABLE `anggota`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `angsuran`
+--
+ALTER TABLE `angsuran`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `failed_jobs`
+--
+ALTER TABLE `failed_jobs`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `jenis_simpanan`
+--
+ALTER TABLE `jenis_simpanan`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `jobs`
+--
+ALTER TABLE `jobs`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `migrations`
+--
+ALTER TABLE `migrations`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `penarikan`
+--
+ALTER TABLE `penarikan`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `permissions`
+--
+ALTER TABLE `permissions`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pinjaman`
+--
+ALTER TABLE `pinjaman`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `riwayat_pinjaman`
+--
+ALTER TABLE `riwayat_pinjaman`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `simpanan`
+--
+ALTER TABLE `simpanan`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `anggota`
+--
+ALTER TABLE `anggota`
+  ADD CONSTRAINT `anggota_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `anggota_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `anggota_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `angsuran`
+--
+ALTER TABLE `angsuran`
+  ADD CONSTRAINT `angsuran_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `angsuran_pinjaman_id_foreign` FOREIGN KEY (`pinjaman_id`) REFERENCES `pinjaman` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `angsuran_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Constraints for table `jenis_simpanan`
+--
+ALTER TABLE `jenis_simpanan`
+  ADD CONSTRAINT `jenis_simpanan_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `jenis_simpanan_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Constraints for table `model_has_permissions`
+--
+ALTER TABLE `model_has_permissions`
+  ADD CONSTRAINT `model_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `model_has_roles`
+--
+ALTER TABLE `model_has_roles`
+  ADD CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `penarikan`
+--
+ALTER TABLE `penarikan`
+  ADD CONSTRAINT `penarikan_anggota_id_foreign` FOREIGN KEY (`anggota_id`) REFERENCES `anggota` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `penarikan_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `penarikan_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Constraints for table `pinjaman`
+--
+ALTER TABLE `pinjaman`
+  ADD CONSTRAINT `pinjaman_anggota_id_foreign` FOREIGN KEY (`anggota_id`) REFERENCES `anggota` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `pinjaman_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `pinjaman_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Constraints for table `riwayat_pinjaman`
+--
+ALTER TABLE `riwayat_pinjaman`
+  ADD CONSTRAINT `riwayat_pinjaman_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `riwayat_pinjaman_pinjaman_id_foreign` FOREIGN KEY (`pinjaman_id`) REFERENCES `pinjaman` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `role_has_permissions`
+--
+ALTER TABLE `role_has_permissions`
+  ADD CONSTRAINT `role_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `role_has_permissions_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `simpanan`
+--
+ALTER TABLE `simpanan`
+  ADD CONSTRAINT `simpanan_anggota_id_foreign` FOREIGN KEY (`anggota_id`) REFERENCES `anggota` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `simpanan_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `simpanan_jenis_simpanan_id_foreign` FOREIGN KEY (`jenis_simpanan_id`) REFERENCES `jenis_simpanan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `simpanan_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Constraints for table `total_saldo_anggota`
+--
+ALTER TABLE `total_saldo_anggota`
+  ADD CONSTRAINT `total_saldo_anggota_anggota_id_foreign` FOREIGN KEY (`anggota_id`) REFERENCES `anggota` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+Setelah itu, saya ingin anda berfokus dengan PenarikanController.php saya:
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+
+class PenarikanController extends Controller
+{
+    public function index(Request $request)
+    {
+        // Ambil semua anggota (bisa difilter status_anggota jika diperlukan)
+        $anggota = DB::table('anggota')->get();
+
+        // Query penarikan
+        $query = DB::table('penarikan')
+            ->select([
+                'penarikan.id            as penarikan_id',
+                'penarikan.kode_transaksi',
+                'penarikan.tanggal_penarikan',
+                'penarikan.jumlah_penarikan',
+                'penarikan.keterangan',
+                'anggota.name            as anggota_name',
+                'anggota.saldo           as anggota_saldo',
+            ])
+            ->leftJoin('anggota', 'anggota.id', '=', 'penarikan.anggota_id');
+
+        // Filter tanggal
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('penarikan.tanggal_penarikan', [
+                $request->start_date,
+                $request->end_date,
+            ]);
+        }
+
+        // Filter pencarian
+        if ($request->filled('search')) {
+            $term = "%{$request->search}%";
+            $query->where(function($q) use($term) {
+                $q->where('penarikan.kode_transaksi', 'like', $term)
+                  ->orWhere('anggota.name',            'like', $term);
+            });
+        }
+
+        $penarikan = $query->orderBy('penarikan.id', 'desc')->paginate(5);
+
+        return view('backend.penarikan.index', compact('penarikan', 'anggota'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'anggota_id'         => 'required|exists:anggota,id',
+            'tanggal_penarikan'  => 'required|date',
+            'jumlah_penarikan'   => 'required|numeric|min:0',
+            'keterangan'         => 'nullable|string',
+        ]);
+
+        // Cek pinjaman aktif
+        $hasLoan = DB::table('pinjaman')
+            ->where('anggota_id', $request->anggota_id)
+            ->where('status', '!=', 'SELESAI')
+            ->exists();
+
+        if ($hasLoan) {
+            return redirect()->route('penarikan')
+                ->with('error', 'Saldo tidak bisa ditarik karena masih ada pinjaman berjalan.');
+        }
+
+        // Generate kode transaksi penarikan
+        $last = DB::table('penarikan')->orderByDesc('id')->first();
+        $next = $last ? ($last->id + 1) : 1;
+        $kode = 'PNR-' . str_pad($next, 4, '0', STR_PAD_LEFT);
+
+        // Insert penarikan
+        DB::table('penarikan')->insert([
+            'anggota_id'         => $request->anggota_id,
+            'tanggal_penarikan'  => $request->tanggal_penarikan,
+            'jumlah_penarikan'   => $request->jumlah_penarikan,
+            'keterangan'         => $request->keterangan,
+            'kode_transaksi'     => $kode,
+            'created_by'         => Auth::id(),
+            'updated_by'         => Auth::id(),
+            'created_at'         => now(),
+            'updated_at'         => now(),
+        ]);
+
+        // Kurangi saldo anggota
+        DB::table('anggota')
+            ->where('id', $request->anggota_id)
+            ->decrement('saldo', $request->jumlah_penarikan);
+
+        // Update status_anggota jika saldo ≤ 0
+        $sisa = DB::table('anggota')
+            ->where('id', $request->anggota_id)
+            ->value('saldo');
+
+        if ($sisa <= 0) {
+            DB::table('anggota')
+                ->where('id', $request->anggota_id)
+                ->update(['status_anggota' => '0']);
+        }
+
+        return redirect()->route('penarikan')
+            ->with('success', 'Penarikan berhasil disimpan.');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'jumlah_penarikan' => 'required|numeric|min:0',
+            'keterangan'       => 'nullable|string',
+        ]);
+
+        $penarikan = DB::table('penarikan')->find($id);
+        if (!$penarikan) {
+            return back()->with('error', 'Data penarikan tidak ditemukan.');
+        }
+
+        // Hitung selisih
+        $selisih = $request->jumlah_penarikan - $penarikan->jumlah_penarikan;
+
+        // Update penarikan
+        DB::table('penarikan')->where('id', $id)->update([
+            'jumlah_penarikan' => $request->jumlah_penarikan,
+            'keterangan'       => $request->keterangan,
+            'updated_by'       => Auth::id(),
+            'updated_at'       => now(),
+        ]);
+
+        // Koreksi saldo anggota
+        DB::table('anggota')
+            ->where('id', $penarikan->anggota_id)
+            ->increment('saldo', -$selisih);
+
+        // Perbarui status_anggota
+        $sisa = DB::table('anggota')
+            ->where('id', $penarikan->anggota_id)
+            ->value('saldo');
+
+        DB::table('anggota')
+            ->where('id', $penarikan->anggota_id)
+            ->update(['status_anggota' => $sisa > 0 ? '1' : '0']);
+
+        return back()->with('success', 'Penarikan berhasil diperbarui.');
+    }
+
+    public function destroy($id)
+    {
+        $penarikan = DB::table('penarikan')->find($id);
+        if (!$penarikan) {
+            return back()->with('error', 'Data penarikan tidak ditemukan.');
+        }
+
+        // Kembalikan saldo anggota
+        DB::table('anggota')
+            ->where('id', $penarikan->anggota_id)
+            ->increment('saldo', $penarikan->jumlah_penarikan);
+
+        // Hapus penarikan
+        DB::table('penarikan')->where('id', $id)->delete();
+
+        // Perbarui status_anggota
+        $sisa = DB::table('anggota')
+            ->where('id', $penarikan->anggota_id)
+            ->value('saldo');
+
+        DB::table('anggota')
+            ->where('id', $penarikan->anggota_id)
+            ->update(['status_anggota' => $sisa > 0 ? '1' : '0']);
+
+        return redirect()->route('penarikan')
+            ->with('success', 'Data penarikan berhasil dihapus.');
+    }
+}
+
+
+Anda harus memastikan semua CRUD sudah benar dan dapat digunakan ditiap file CRUD Penarikan yaitu berikut :
+
+1. penarikan/modal/modalCreate.blade.php
+<div class="modal fade" id="buatPenarikan" tabindex="-1" aria-labelledby="buatPenarikanLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="buatPenarikanLabel">Buat Penarikan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="card text-center mb-3">
+          <div class="card-header">Informasi</div>
+          <div class="card-body">
+            Jumlah saldo Anda saat ini adalah <strong>Rp <span id="saldoText">0.00</span></strong>.
+          </div>
+        </div>
+        <form method="POST" action="{{ route('penarikan.store') }}">
+          @csrf
+
+          {{-- Pilih Anggota --}}
+          <div class="form-floating mb-3">
+            <select name="anggota_id" id="anggota_id"
+                    class="form-select @error('anggota_id') is-invalid @enderror" required>
+              <option value="">Pilih Anggota</option>
+              @foreach($anggota as $member)
+              <option value="{{ $member->id }}"
+                      data-saldo="{{ $member->saldo }}"
+                      {{ old('anggota_id') == $member->id ? 'selected' : '' }}>
+                {{ $member->name }}
+              </option>
+              @endforeach
+            </select>
+            <label for="anggota_id">Anggota</label>
+            @error('anggota_id')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+
+          {{-- Tanggal Penarikan --}}
+          <div class="form-floating mb-3">
+            <input type="date" name="tanggal_penarikan" id="tanggal_penarikan"
+                   value="{{ old('tanggal_penarikan') }}"
+                   class="form-control @error('tanggal_penarikan') is-invalid @enderror" required>
+            <label for="tanggal_penarikan">Tanggal Penarikan</label>
+            @error('tanggal_penarikan')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+
+          {{-- Jumlah Penarikan --}}
+          <div class="form-floating mb-3">
+            <input type="number" name="jumlah_penarikan" id="jumlah_penarikan" step="0.01"
+                   value="{{ old('jumlah_penarikan') }}"
+                   class="form-control @error('jumlah_penarikan') is-invalid @enderror" required>
+            <label for="jumlah_penarikan">Jumlah Penarikan</label>
+            @error('jumlah_penarikan')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+
+          {{-- Keterangan --}}
+          <div class="form-floating mb-3">
+            <textarea name="keterangan" id="keterangan" rows="4"
+                      class="form-control @error('keterangan') is-invalid @enderror"
+                      placeholder="Keterangan">{{ old('keterangan') }}</textarea>
+            <label for="keterangan">Keterangan</label>
+            @error('keterangan')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            <button type="submit" class="btn btn-success">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{-- Script untuk update saldoText --}}
+<script>
+document.getElementById('anggota_id').addEventListener('change', function() {
+  const selected = this.selectedOptions[0];
+  const saldo = parseFloat(selected.dataset.saldo || 0).toLocaleString('id-ID', {minimumFractionDigits:2, maximumFractionDigits:2});
+  document.getElementById('saldoText').textContent = saldo;
+});
+
+// Inisialisasi saat modal dibuka
+var modal = document.getElementById('buatPenarikan');
+modal.addEventListener('show.bs.modal', function () {
+  const sel = document.getElementById('anggota_id');
+  if (sel.value) sel.dispatchEvent(new Event('change'));
+});
+</script>
+
+
+2. penarikan/modal/modalEdit.blade.php
+<!-- Modal Edit Penarikan -->
+<div class="modal fade" id="editPenarikan" tabindex="-1" aria-labelledby="editPenarikanLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" class="form-edit-penarikan">
+        @csrf
+        @method('PUT')
+        <div class="modal-header">
+          <h5 class="modal-title" id="editPenarikanLabel">Edit Penarikan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          {{-- Info Saldo --}}
+          <div class="card text-center mb-3">
+            <div class="card-header">Informasi</div>
+            <div class="card-body">
+              Jumlah saldo Anda saat ini adalah <strong>Rp <span id="saldoText">0.00</span></strong>.
+            </div>
+          </div>
+
+          {{-- Jumlah Penarikan --}}
+          <div class="form-floating mb-3">
+            <input type="number" step="0.01"
+                   class="form-control"
+                   id="edit_jumlah_penarikan"
+                   name="jumlah_penarikan" required>
+            <label for="edit_jumlah_penarikan">Jumlah Penarikan</label>
+          </div>
+
+          {{-- Keterangan --}}
+          <div class="form-floating mb-3">
+            <textarea class="form-control"
+                      id="edit_keterangan"
+                      name="keterangan"
+                      placeholder="Keterangan"
+                      style="height: 100px;"></textarea>
+            <label for="edit_keterangan">Keterangan</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+          <button type="submit" class="btn btn-success">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('editPenarikan');
+  modal.addEventListener('show.bs.modal', event => {
+    const button = event.relatedTarget;
+    const id       = button.getAttribute('data-id');
+    const jumlah   = button.getAttribute('data-jumlah');
+    const keterangan = button.getAttribute('data-keterangan');
+    const saldo    = parseFloat(button.getAttribute('data-saldo') || 0)
+                       .toLocaleString('id-ID',{minimumFractionDigits:2});
+    const form     = modal.querySelector('.form-edit-penarikan');
+
+    form.action = `/penarikan/${id}`;
+    form.querySelector('#edit_jumlah_penarikan').value = jumlah;
+    form.querySelector('#edit_keterangan').value      = keterangan;
+    modal.querySelector('#saldoText').textContent     = saldo;
+  });
+});
+</script>
+
+
+3. penarikan/index.blade.php :
+@extends('backend.app')
+@section('title', 'Penarikan')
+@section('content')
+<div class="container-fluid pt-4 px-4">
+    <h2 class="mb-4">Data Penarikan</h2>
+
+    {{-- Alerts --}}
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show custom-alert" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show custom-alert" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    <div class="bg-light rounded h-100 p-4">
+        <div class="d-flex justify-content-between mb-3">
+            @can('penarikan-create')
+            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#buatPenarikan">
+                <i class="fas fa-plus-circle"></i> Tambah Penarikan
+            </button>
+            @endcan
+            @include('backend.penarikan.modal.modalCreate')
+            @include('backend.penarikan.modal.modalEdit')
+
+            <div class="d-flex">
+                <form id="reportForm" action="{{ route('penarikan') }}" method="GET" class="d-flex me-2">
+                    <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}"
+                           onchange="this.form.submit()">
+                    <span class="align-self-center mx-2">s.d.</span>
+                    <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}"
+                           onchange="this.form.submit()">
+                </form>
+                @can('laporan_penarikan')
+                <a href="{{ route('penarikan.cetak', request()->only(['start_date','end_date'])) }}"
+                   class="btn btn-primary">
+                    <i class="fas fa-print"></i> Cetak
+                </a>
+                @endcan
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <form action="{{ route('penarikan') }}" method="GET" class="input-group">
+                <input type="search" name="search" class="form-control" placeholder="Cari kode/nama nasabah"
+                       value="{{ request('search') }}">
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Kode Penarikan</th>
+                        <th>Tanggal</th>
+                        <th>Nasabah</th>
+                        <th>Jumlah</th>
+                        <th>Keterangan</th>
+                        @can('penarikan-edit','penarikan-delete')
+                        <th>Aksi</th>
+                        @endcan
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($penarikan as $item)
+                    <tr>
+                        <td>{{ $item->kode_transaksi }}</td>
+                        <td>{{ tanggal_indonesia($item->tanggal_penarikan, false) }}</td>
+                        <td>{{ $item->name }}</td>
+                        <td>Rp {{ number_format($item->jumlah_penarikan, 2, ',', '.') }}</td>
+                        <td>{{ $item->keterangan ?? '-' }}</td>
+                        @can('penarikan-edit','penarikan-delete')
+                        <td>
+                            @can('penarikan-edit')
+                            <button class="btn btn-sm btn-outline-warning"
+                                    data-bs-toggle="modal" data-bs-target="#editPenarikan"
+                                    data-id="{{ $item->id }}"
+                                    data-jumlah="{{ $item->jumlah_penarikan }}"
+                                    data-keterangan="{{ $item->keterangan }}"
+                                    data-saldo="{{ $item->saldo ?? 0 }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            @endcan
+                            @can('penarikan-delete')
+                            <form action="{{ route('penarikan.destroy', $item->id) }}" method="POST"
+                                  class="d-inline" onsubmit="return confirm('Yakin hapus data?');">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                            </form>
+                            @endcan
+                        </td>
+                        @endcan
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center">Belum ada penarikan.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+
+            <div class="float-end">
+                {{ $penarikan->withQueryString()->links() }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tambahkan skrip di akhir konten -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const anggotaSelect = document.getElementById('id_anggota');
+        const saldoText = document.getElementById('saldoText');
+
+        anggotaSelect.addEventListener('change', function() {
+            const selectedOption = anggotaSelect.options[anggotaSelect.selectedIndex];
+            const saldo = selectedOption.getAttribute('data-saldo') || 0;
+            saldoText.textContent = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }).format(saldo);
+        });
+    });
+
+    setTimeout(() => {
+    document.querySelectorAll('.custom-alert').forEach(a => new bootstrap.Alert(a).close());
+}, 5000);
+</script>
+@endsection
+
+oke, karena disini saya masih pemula untuk laravel. Saya minta tolong tulisan ulang tiap modifikasi tiap file secara lengkap 1 file nya. Dimulai dari yang anda sarankan dulu saja

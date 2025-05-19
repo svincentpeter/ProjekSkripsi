@@ -24,28 +24,28 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $countSimpanan = DB::table('_anggota')->sum('saldo');
+        $countSimpanan = DB::table('anggota')->sum('saldo');
         $countpenarikan = DB::table('penarikan')->sum('jumlah_penarikan');
-        $countpinjaman = DB::table('pinjaman')->sum('jml_pinjam');
-        $counttotalanggota = DB::table('_anggota')->get('id')->count();
+        $countpinjaman = DB::table('pinjaman')->sum('jumlah_pinjam');
+        $counttotalanggota = DB::table('anggota')->get('id')->count();
 
         //donat chart
         // Menghitung jumlah anggota aktif dan non-aktif menggunakan Query Builder
-        $aktif = DB::table('_anggota')->where('status_anggota', 1)->count();
-        $nonAktif = DB::table('_anggota')->where('status_anggota', 0)->count();
+        $aktif    = DB::table('anggota')->where('status_anggota', '1')->count();
+        $nonAktif = DB::table('anggota')->where('status_anggota', '0')->count();
 
         //balok chart
         // Fetch yearly data for Simpanan, Pinjaman, and Penarikan
         $years = range(2022, 2030);
 
         $simpananData = DB::table('simpanan')
-        ->select(DB::raw('YEAR(tanggal_simpanan) as year'), DB::raw('SUM(jml_simpanan) as total'))
+        ->select(DB::raw('YEAR(tanggal_simpanan) as year'), DB::raw('SUM(jumlah_simpanan) as total'))
         ->whereIn(DB::raw('YEAR(tanggal_simpanan)'), $years)
             ->groupBy('year')
             ->pluck('total', 'year')->toArray();
 
         $pinjamanData = DB::table('pinjaman')
-        ->select(DB::raw('YEAR(tanggal_pinjam) as year'), DB::raw('SUM(jml_pinjam) as total'))
+        ->select(DB::raw('YEAR(tanggal_pinjam) as year'), DB::raw('SUM(jumlah_pinjam) as total'))
         ->whereIn(DB::raw('YEAR(tanggal_pinjam)'), $years)
             ->groupBy('year')
             ->pluck('total', 'year')->toArray();

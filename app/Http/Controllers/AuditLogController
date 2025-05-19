@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\AuditLog;
+
+class AuditLogController extends Controller
+{
+    /**
+     * Tampilkan log untuk suatu entitas tertentu.
+     */
+    public function index($modelType, $modelId)
+    {
+        $logs = AuditLog::with('user')
+            ->where('model_type', $modelType)
+            ->where('model_id', $modelId)
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('backend.partial.auditlog', compact('logs', 'modelType', 'modelId'));
+    }
+}

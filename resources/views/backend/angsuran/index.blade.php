@@ -1,144 +1,195 @@
 @extends('backend.app')
-
 @section('title', 'Data Angsuran')
+
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<style>
+    .img-thumb { cursor: pointer; transition: .2s; }
+    .img-thumb:hover { transform: scale(1.12); box-shadow: 0 2px 12px rgba(0,0,0,.15);}
+</style>
+@endpush
 
 @section('content')
 <div class="container-fluid pt-4 px-4">
-    <h2 class="mb-4">Data Angsuran</h2>
-
-    <!-- Alert Success -->
-    @if(Session::has('message'))
-    <div id="successAlert" class="alert alert-success alert-dismissible fade show custom-alert" role="alert">
-        <h5 class="alert-heading"><i class="icon fas fa-check-circle"></i> Sukses!</h5>
-        {{ Session('message') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <h2 class="mb-0">Data Angsuran</h2>
+        <a href="{{ route('angsuran.create') }}" class="btn btn-success shadow-sm"><i class="fas fa-plus"></i> Tambah Angsuran</a>
     </div>
+
+    {{-- SweetAlert2 Flash Message --}}
+    @if(session('success'))
+        <script>
+            window.onload = () => Swal.fire({
+                icon: 'success',
+                title: 'Sukses',
+                text: @json(session('success')),
+                timer: 2600,
+                showConfirmButton: false
+            });
+        </script>
+    @endif
+    @if(session('error'))
+        <script>
+            window.onload = () => Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: @json(session('error')),
+                timer: 3200,
+                showConfirmButton: false
+            });
+        </script>
     @endif
 
-    <!-- Alert Error -->
-    @if(Session::has('error'))
-    <div id="errorAlert" class="alert alert-danger alert-dismissible fade show custom-alert" role="alert">
-        <h5 class="alert-heading"><i class="icon fas fa-times-circle"></i> Error!</h5>
-        {{ Session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    @endif
-
-    <div class="bg-light rounded h-100 p-4">
-        <div class="table-responsive">
-            <div class="mb-3 d-flex justify-content-between">
-                
-
-
-
-                <!-- Form Laporan Tanggal -->
-                <div class="d-flex align-items-center ms-2">
-                    <span class="me-2">Report</span>
-                    <form id="reportForm" action="{{ route('angsuran') }}" method="GET" class="d-flex align-items-center">
-                        <input type="date" name="start_date" class="form-control me-2" value="{{ request()->get('start_date') }}" onchange="document.getElementById('reportForm').submit()">
-                        <span class="me-2">To</span>
-                        <input type="date" name="end_date" class="form-control me-2" value="{{ request()->get('end_date') }}" onchange="document.getElementById('reportForm').submit()">
-
-                    </form>
-                    <a href="{{ route('angsuran.cetak', ['start_date' => request()->get('start_date'), 'end_date' => request()->get('end_date')]) }}" class="btn btn-primary ms-2">
-                        <i class="fas fa-print"></i>
-                    </a>
-                </div>
-
-                <!-- Form Pencarian -->
-                <div class="d-flex align-items-center ms-2">
-                    <form action="{{ route('angsuran') }}" method="GET" class="d-flex">
-                        <div class="input-group">
-                            <input type="text" name="search" class="form-control" placeholder="Cari Kode Transaksi/Nama Anggota" value="{{ request()->get('search') }}">
-                            <button type="submit" class="btn btn-outline-primary">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
+    <div class="bg-light rounded shadow-sm p-4 mb-4">
+        <form class="row g-3 mb-3" method="get">
+            <div class="col-md-3">
+                <input type="text" name="search" class="form-control" placeholder="Cari Nama/Kode" value="{{ request('search') }}">
             </div>
-
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Kode Angsuran</th>
-                        <th scope="col">Cicikan ke</th>
-                        <th scope="col">Tanggal</th>
-                        <th scope="col">Nasabah</th>
-                        <th scope="col">Pinjaman Pokok</th>
-
-                        <th scope="col">Jumlah Angsuran</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Aksi</th>
+            <div class="col-md-2">
+                <select name="status" class="form-select">
+                    <option value="">Status</option>
+                    <option value="PENDING" {{ request('status')=='PENDING'?'selected':'' }}>Belum Lunas</option>
+                    <option value="LUNAS" {{ request('status')=='LUNAS'?'selected':'' }}>Lunas</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}">
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}">
+            </div>
+            <div class="col-md-3 d-grid d-md-flex">
+                <button type="submit" class="btn btn-primary me-2"><i class="fas fa-search"></i> Filter</button>
+                {{-- Placeholder Export --}}
+                <a href="#" class="btn btn-outline-secondary d-none" title="Export (Coming Soon)" disabled>
+                    <i class="fas fa-file-export"></i>
+                </a>
+            </div>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle">
+                <thead class="table-light">
+                    <tr class="text-center align-middle">
+                        <th>Kode</th>
+                        <th>Cicilan</th>
+                        <th>Tanggal</th>
+                        <th>Nasabah</th>
+                        <th>Pinjaman</th>
+                        <th>Jumlah</th>
+                        <th>Status</th>
+                        <th>Bukti</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($angsuran as $angs)
+                    @forelse($angsuran as $ang)
                     <tr>
-                        <td>{{ $angs->kode_transaksi_angsuran }}</td>
-                        <td>{{ $angs->angsuran_ke }}</td>
-                        <td>{{ $angs->tanggal_angsuran }}</td>
-                        <td>{{ $angs->nasabah }}</td>
-                        <td>Rp {{ number_format($angs->pinjaman_pokok, 0, ',', '.') }}</td>
-                        <!-- <td>Rp {{ number_format($angs->bunga, 0, ',', '.') }}</td> -->
-                        <td>Rp {{ number_format($angs->jml_angsuran, 0, ',', '.') }}</td>
-                        <td>
-                            @if ($angs->status == 0)
-                            <span class="text-warning">Belum Lunas</span>
-                            @elseif ($angs->status == 1)
-                            <span class="text-success">Lunas</span>
+                        <td>{{ $ang->kode_transaksi_angsuran }}</td>
+                        <td class="text-center">{{ $ang->angsuran_ke }}</td>
+                        <td>{{ tanggal_indonesia($ang->tanggal_angsuran ?? $ang->created_at, false) }}</td>
+                        <td>{{ $ang->nasabah }}</td>
+                        <td>Rp {{ number_format($ang->pinjaman_pokok, 0, ',', '.') }}</td>
+                        <td>Rp {{ number_format($ang->jumlah_angsuran, 0, ',', '.') }}</td>
+                        <td class="text-center">
+                            @if($ang->status === 'PENDING' || $ang->status == '0')
+                                <span class="badge bg-warning text-dark">Belum Lunas</span>
+                            @elseif($ang->status === 'LUNAS' || $ang->status == '1')
+                                <span class="badge bg-success">Lunas</span>
                             @endif
                         </td>
-                        <td>
-                            <a href="{{ route('pinjaman.show', $angs->angsuran_id) }}" class="btn btn-outline-info" title="Show">
+                        <td class="text-center">
+                            @if($ang->bukti_pembayaran)
+                                <img src="{{ asset('assets/img/'.$ang->bukti_pembayaran) }}" 
+                                    class="img-thumb rounded" alt="Bukti" width="40"
+                                    data-img="{{ asset('assets/img/'.$ang->bukti_pembayaran) }}"
+                                    onclick="previewImage(this)">
+                            @else
+                                <span class="text-muted small fst-italic">-</span>
+                            @endif
+                        </td>
+                        <td class="text-nowrap text-center">
+                            <a href="{{ route('angsuran.show', $ang->angsuran_id) }}" 
+                                class="btn btn-info btn-sm" data-bs-toggle="tooltip" title="Detail">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{{ route('angsuran.edit', $angs->angsuran_id) }}" class="btn btn-outline-warning" title="Edit">
+                            <a href="{{ route('angsuran.edit', $ang->angsuran_id) }}" 
+                                class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <!-- Form for delete action -->
-                            <form action="{{ route('angsuran.destroy', $angs->angsuran_id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-outline-danger" title="Delete">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
+                            <button type="button" class="btn btn-danger btn-sm" 
+                                onclick="deleteAngsuran('{{ route('angsuran.destroy', $ang->angsuran_id) }}')" 
+                                data-bs-toggle="tooltip" title="Hapus">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="9" class="text-center text-muted">Tidak ada data angsuran.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
-            @if($angsuran->isEmpty())
-            <p class="text-center">Tidak Ada Data Angsuran</p>
-            @endif
-
-            <!-- Pagination Links -->
-            <div class="float-right">
+            <div class="float-end mt-2">
                 {{ $angsuran->links() }}
             </div>
         </div>
     </div>
 </div>
 
-<!-- Bootstrap JavaScript Bundle with Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Script untuk menutup alert secara otomatis -->
-<script>
-    // Menutup alert secara otomatis setelah 5 detik
-    setTimeout(function() {
-        document.querySelectorAll('.alert').forEach(function(alert) {
-            new bootstrap.Alert(alert).close();
-        });
-    }, 5000); // 5000 milidetik = 5 detik
-
-    // Membuat animasi alert muncul di depan tabel
-    $(document).ready(function() {
-        $(".custom-alert").each(function(index) {
-            $(this).delay(300 * index).fadeIn("slow");
-        });
-    });
-</script>
+{{-- Modal Preview Gambar --}}
+<div class="modal fade" id="modalPreviewImg" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content shadow border-0">
+            <div class="modal-body p-0">
+                <img id="preview-img" src="" class="img-fluid rounded" alt="Preview Bukti">
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Tooltip
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(e=>new bootstrap.Tooltip(e));
+
+    // Modal preview gambar
+    window.previewImage = (el) => {
+        document.getElementById('preview-img').src = el.dataset.img;
+        new bootstrap.Modal(document.getElementById('modalPreviewImg')).show();
+    };
+
+    // SweetAlert2 delete
+    function deleteAngsuran(url) {
+        Swal.fire({
+            title: 'Hapus Data?',
+            text: 'Data angsuran yang dihapus tidak bisa dikembalikan!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#e3342f'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // create a form & submit
+                let form = document.createElement('form');
+                form.action = url;
+                form.method = 'POST';
+                form.style.display = 'none';
+                let csrf = document.createElement('input');
+                csrf.name = '_token';
+                csrf.value = '{{ csrf_token() }}';
+                form.appendChild(csrf);
+                let method = document.createElement('input');
+                method.name = '_method';
+                method.value = 'DELETE';
+                form.appendChild(method);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
+@endpush

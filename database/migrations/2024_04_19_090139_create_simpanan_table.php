@@ -6,35 +6,35 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+    public function up(): void
     {
         Schema::create('simpanan', function (Blueprint $table) {
             $table->id();
-            $table->string('kodeTransaksiSimpanan');
-            $table->string('tanggal_simpanan');
-            $table->foreignId('id_anggota')->references('id')->on('_anggota')->onDelete('cascade');
-            $table->foreignId('id_jenis_simpanan')->references('id')->on('jenis_simpanan')->onDelete('cascade');
-            $table->string('jml_simpanan');
+            $table->string('kode_transaksi')->unique();
+            $table->date('tanggal_simpanan');
+            $table->foreignId('anggota_id')
+                  ->constrained('anggota')
+                  ->cascadeOnUpdate()
+                  ->cascadeOnDelete();
+            $table->foreignId('jenis_simpanan_id')
+                  ->constrained('jenis_simpanan')
+                  ->cascadeOnUpdate()
+                  ->cascadeOnDelete();
+            $table->decimal('jumlah_simpanan', 12, 2);
             $table->string('bukti_pembayaran');
-            $table->foreignId('created_by')->notNull()->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('updated_by')->notNull()->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('created_by')
+                  ->constrained('users')
+                  ->cascadeOnUpdate()
+                  ->restrictOnDelete();
+            $table->foreignId('updated_by')
+                  ->constrained('users')
+                  ->cascadeOnUpdate()
+                  ->restrictOnDelete();
             $table->timestamps();
-            // $table->string('status_simpanan');
-            // $table->string('keterangan_ditolak_simpanan');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('simpanan');
     }

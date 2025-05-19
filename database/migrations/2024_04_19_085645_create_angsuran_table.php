@@ -6,38 +6,37 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+    public function up(): void
     {
         Schema::create('angsuran', function (Blueprint $table) {
             $table->id();
-            $table->string('kodeTransaksiAngsuran');
-            $table->foreignId('id_pinjaman')->references('id')->on('pinjaman')->onDelete('cascade');
-            $table->string('tanggal_angsuran');
-            $table->string('jml_angsuran');
-            $table->integer('sisa_pinjam');
-            $table->integer('cicilan');
-            $table->string('status', 25);
-            $table->string('keterangan')->nullable();
+            $table->string('kode_transaksi')->unique();
+            $table->foreignId('pinjaman_id')
+                  ->constrained('pinjaman')
+                  ->cascadeOnUpdate()
+                  ->cascadeOnDelete();
+            $table->date('tanggal_angsuran');
+            $table->decimal('jumlah_angsuran', 12, 2);
+            $table->decimal('sisa_pinjam', 12, 2);
+            $table->unsignedSmallInteger('cicilan');
+            $table->enum('status', ['PENDING', 'LUNAS'])->default('PENDING');
+            $table->text('keterangan')->nullable();
             $table->string('bukti_pembayaran');
-            $table->string('bunga_pinjaman');
-            $table->integer('denda');
-            $table->foreignId('created_by')->notNull()->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('updated_by')->notNull()->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->decimal('bunga_pinjaman', 5, 2);
+            $table->decimal('denda', 12, 2)->default(0);
+            $table->foreignId('created_by')
+                  ->constrained('users')
+                  ->cascadeOnUpdate()
+                  ->restrictOnDelete();
+            $table->foreignId('updated_by')
+                  ->constrained('users')
+                  ->cascadeOnUpdate()
+                  ->restrictOnDelete();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('angsuran');
     }

@@ -102,28 +102,33 @@
         }
     </style>
 </head>
-
 <body>
-    <div>
-        <header>
-            <table width="100%">
-                <tr>
-                    <td width="15%" align="center"><img src="https://kopmafeuii.com/wp-content/uploads/2017/06/LAMBANG-KOPERASI.png" width="90%"></td>
-                    <td width="70%" align="center">
-                        <h3>LAPORAN SIMPANAN</h1>
-                            <h4>KOPERASI SIMPAN PINJAM "OPEN SOURCE"</h1>
-                                <p class="alamatlogo">Jl. A Yani No. 1 A Tambak Rejo, Wonodadi, Kec. Pringsewu</p>
-                                <p class="kodeposlogo">Pringsewu, Lampung 35372</p>
-                    </td>
-                    <td width="15%" align="center"><img src="https://kopkarindu.wordpress.com/wp-content/uploads/2014/05/koperasi-logo-baru-indonesia-vector.jpg" width="90%"></td>
-                </tr>
-            </table>
-            <hr class="garis1">
-        </header><br>
-        <div id="laporan-title">
-            <h4>Laporan Simpanan</h4>
-            <p>Periode: {{ tanggal_indonesia($startDate, false) }} - {{ tanggal_indonesia($endDate, false) }}</p>
-        </div>
+    <header>
+        <table width="100%">
+            <tr>
+                <td width="15%" align="center">
+                    <img src="https://kopmafeuii.com/wp-content/uploads/2017/06/LAMBANG-KOPERASI.png" width="90%">
+                </td>
+                <td width="70%" align="center">
+                    <h3>LAPORAN SIMPANAN</h3>
+                    <h4>KOPERASI SIMPAN PINJAM "OPEN SOURCE"</h4>
+                    <p class="alamatlogo">Jl. A Yani No. 1 A Tambak Rejo, Wonodadi, Kec. Pringsewu</p>
+                    <p class="kodeposlogo">Pringsewu, Lampung 35372</p>
+                </td>
+                <td width="15%" align="center">
+                    <img src="https://kopkarindu.wordpress.com/wp-content/uploads/2014/05/koperasi-logo-baru-indonesia-vector.jpg" width="90%">
+                </td>
+            </tr>
+        </table>
+        <hr class="garis1">
+    </header>
+
+    <div id="laporan-title">
+        <h4>Laporan Simpanan</h4>
+        <p>Periode: {{ tanggal_indonesia($startDate, false) }} – {{ tanggal_indonesia($endDate, false) }}</p>
+    </div>
+
+    <div class="table-container">
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -135,32 +140,35 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($simpanan as $tabungan)
+                @forelse($simpanan as $tabungan)
                 <tr>
                     <td>{{ tanggal_indonesia($tabungan->tanggal_simpanan, false) }}</td>
                     <td>{{ $tabungan->anggota_name }}</td>
-                    <td>{{ $tabungan->kodeTransaksiSimpanan }}</td>
-                    <td>Rp {{ number_format($tabungan->jml_simpanan, 2, ',', '.') }}</td>
+                    <td>{{ $tabungan->kode_transaksi }}</td>
+                    <td>Rp {{ number_format($tabungan->jumlah_simpanan, 2, ',', '.') }}</td>
                     <td>{{ $tabungan->jenis_simpanan_nama }}</td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="5" class="text-center">Tidak Ada Data Simpanan</td>
+                </tr>
+                @endforelse
             </tbody>
-        </table><br>
+        </table>
+    </div>
+
+    <footer>
         <table width="100%">
             <tr>
-                <td width="15%" align="center"><img src="" width="90%"></td>
-                <td width="55%" align="center"><img src="" width="90%"></td>
+                <td width="60%"></td>
                 <td width="40%" align="center">
-
                     <p class="alamatlogo">Pringsewu, {{ tanggal_indonesia(\Carbon\Carbon::now(), false) }}</p>
                     <p class="kodeposlogo">Kepala Koperasi</p>
                     <br><br><br>
-                    <p class="kodeposlogo">{{ auth()->user()->name}}</p>
-
+                    <p class="kodeposlogo">{{ auth()->user()->name }}</p>
                 </td>
             </tr>
         </table>
-    </div>
+    </footer>
 </body>
-
 </html>

@@ -6,66 +6,68 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class NasabahRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
-    {
-        return [
-            'nama' => 'required|string|max:255',
-            'telphone' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'nip' => 'required|string|max:255',
-            'password' => 'required|string|min:8', // Add password validation
-            'agama' => 'required|string|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu', // Add agama validation
-            'jenis_kelamin' => 'required|string|in:Laki-laki,Perempuan',
-            'tgl_lahir' => 'nullable|date',
-            'pekerjaan' => 'nullable|string|max:255',
-            'alamat' => 'nullable|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,jpg,png|max:5048', // Update max file size to 2MB (2048 KB)
-            'status_anggota' => 'nullable|string|max:255',
-            'tgl_gabung' => 'required|date',
-        ];
+{
+    $nasabahId = $this->route('nasabah');
+    $isUpdate = in_array($this->method(), ['PUT', 'PATCH']);
+
+    $rules = [
+        'name'            => 'required|string|max:255',
+        'nip'             => 'required|string|max:255|unique:anggota,nip' . ($isUpdate ? ',' . $nasabahId : ''),
+        'telphone'        => 'required|string|max:255',
+        'agama'           => 'nullable|string|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
+        'jenis_kelamin'   => 'nullable|in:L,P',
+        'tgl_lahir'       => 'nullable|date',
+        'pekerjaan'       => 'nullable|string|max:255',
+        'alamat'          => 'nullable|string|max:255',
+        'image'           => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
+        'status_anggota'  => 'nullable|in:0,1',
+    ];
+
+    if ($isUpdate) {
+        $anggota = \App\Models\Anggota::find($nasabahId);
+        $userId = $anggota?->user_id;
+        $rules['email'] = 'required|email|unique:users,email,' . $userId;
+        $rules['password'] = 'nullable|min:6|confirmed';
+    } else {
+        $rules['email'] = 'required|email|unique:users,email';
+        $rules['password'] = 'required|min:6|confirmed';
     }
+
+    return $rules;
+}
+
 
     public function messages(): array
     {
         return [
-            'nama.required' => 'Nama wajib diisi.',
-            'nama.max' => 'Panjang teks untuk Nama maksimal :max karakter.',
-            'telphone.required' => 'Nomor telepon wajib diisi.',
-            'telphone.max' => 'Panjang teks untuk Nomor Telepon maksimal :max karakter.',
-            'email.required' => 'Alamat email wajib diisi.',
-            'email.email' => 'Format alamat email tidak valid.',
-            'email.max' => 'Panjang teks untuk Alamat Email maksimal :max karakter.',
-            'nip.required' => 'NIP wajib diisi.',
-            'nip.max' => 'Panjang teks untuk NIP maksimal :max karakter.',
-            'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal :min karakter.',
-            'agama.required' => 'Agama wajib dipilih.',
-            'agama.in' => 'Pilihan untuk agama tidak valid.',
-            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
-            'jenis_kelamin.in' => 'Pilihan untuk jenis kelamin tidak valid.',
-            'tgl_lahir.date' => 'Tanggal lahir harus dalam format tanggal yang valid.',
-            'pekerjaan.max' => 'Panjang teks untuk Pekerjaan maksimal :max karakter.',
-            'alamat.max' => 'Panjang teks untuk Alamat maksimal :max karakter.',
-            'image.image' => 'File harus berupa gambar (jpeg, jpg, png).',
-            'image.mimes' => 'File harus berupa gambar dengan format jpeg, jpg, atau png.',
-            'image.max' => 'Ukuran file tidak boleh lebih dari 2MB.',
-            'status_anggota.max' => 'Panjang teks untuk Status Anggota maksimal :max karakter.',
-            'tgl_gabung.required' => 'Tanggal gabung wajib diisi.',
-            'tgl_gabung.date' => 'Tanggal gabung harus dalam format tanggal yang valid.',
+            'name.required'           => 'Nama wajib diisi.',
+            'name.max'                => 'Nama maksimal :max karakter.',
+            'nip.required'            => 'NIP wajib diisi.',
+            'nip.max'                 => 'NIP maksimal :max karakter.',
+            'nip.unique'              => 'NIP sudah terdaftar.',
+            'telphone.required'       => 'Telepon wajib diisi.',
+            'telphone.max'            => 'Telepon maksimal :max karakter.',
+            'agama.in'                => 'Pilihan agama tidak valid.',
+            'jenis_kelamin.in'        => 'Pilihan jenis kelamin tidak valid.',
+            'tgl_lahir.date'          => 'Tanggal lahir harus tanggal yang valid.',
+            'pekerjaan.max'           => 'Pekerjaan maksimal :max karakter.',
+            'alamat.max'              => 'Alamat maksimal :max karakter.',
+            'image.image'             => 'File harus gambar.',
+            'image.mimes'             => 'Format gambar harus jpeg, jpg, atau png.',
+            'image.max'               => 'Ukuran gambar maksimal 2MB.',
+            'status_anggota.in'       => 'Status anggota hanya 0 (non-aktif) atau 1 (aktif).',
+            'email.required'          => 'Email wajib diisi.',
+            'email.email'             => 'Format email tidak valid.',
+            'email.unique'            => 'Email sudah digunakan.',
+            'password.required'       => 'Password wajib diisi.',
+            'password.min'            => 'Password minimal 6 karakter.',
+            'password.confirmed'      => 'Konfirmasi password tidak sama.',
         ];
     }
-
 }

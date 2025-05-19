@@ -3,206 +3,157 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\NasabahRequest;
+use App\Models\Anggota;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class NasabahController extends Controller
 {
-   public function index()
-{
-    // Ambil data nasabah dengan paginasi
-    $nasabah = DB::table('_anggota')->paginate(5);
-
-    // Iterasi melalui setiap nasabah untuk memeriksa saldo mereka
-    foreach ($nasabah as $nasabahItem) {
-        if ($nasabahItem->saldo == 0) {
-            // Update status_anggota menjadi non-aktif (0) jika saldo 0
-            DB::table('_anggota')
-                ->where('id', $nasabahItem->id)
-                ->update(['status_anggota' => 0]);
-        }
+    // Tampilkan semua nasabah (paginated)
+    public function index()
+    {
+        // Menggunakan Eloquent supaya Carbon otomatis
+        $nasabah = Anggota::with('user')->orderBy('updated_at', 'desc')->paginate(5);
+        return view('backend.nasabah.index', compact('nasabah'));
     }
 
-    return view('backend.nasabah.index', compact('nasabah'));
-}
-
+    // Tampilkan form create
     public function create()
     {
         return view('backend.nasabah.create');
     }
 
-
+    // Simpan data baru
     public function store(NasabahRequest $request)
     {
         DB::beginTransaction();
-        $imageName = null;
-
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('assets/backend/img'), $imageName);
-        }
-
         try {
-            // Create a new user
-            $user = User::create([
-                'name' => $request->nama,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
-                'image' => $imageName, // Make sure the image storage is configured properly
-                'created_at' => \Carbon\Carbon::now(),
-            ]);
-
-            // Determine status based on saldo
-            $saldo = 0;
-            $statusAnggota = $saldo == 0 ? 0 : 1; // Set to non-aktif if saldo is 0
-
-            // Create a new nasabah related to the user
-            DB::table('_anggota')->insert([
-                'name' => $request->nama,
-                'telphone' => $request->telphone,
-                'nip' => $request->nip,
-                'agama' => $request->agama,
-                'jenis_kelamin' => $request->jenis_kelamin,
-                'tgl_lahir' => $request->tgl_lahir,
-                'pekerjaan' => $request->pekerjaan,
-                'alamat' => $request->alamat,
-                'image' => $imageName,
-                'status_anggota' => $statusAnggota,
-                'saldo' => $saldo,
-                'tgl_gabung' => $request->tgl_gabung,
-                'user_id' => $user->id,
-                'created_by' => Auth::id(),
-                'updated_by' => Auth::id(),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            DB::commit();
-
-            return redirect()->route('nasabah')->with('message', 'Data Nasabah Berhasil Disimpan');
-        } catch (\Exception $e) {
-            DB::rollback();
-            return redirect()->route('nasabah')->with('error', 'Gagal menyimpan data: ' . $e->getMessage())->withErrors($e->getMessage());
-        }
-    }
-
-    public function edit($id)
-    {
-        // Menemukan nasabah berdasarkan id
-        $nasabah = DB::table('_anggota')->where('id', $id)->first();
-
-        if (!$nasabah) {
-            return redirect()->route('nasabah')->with('error', 'Nasabah tidak ditemukan');
-        }
-
-        // Menemukan pengguna berdasarkan user_id dari nasabah
-        $user = DB::table('users')->where('id', $nasabah->user_id)->first();
-
-        return view('backend.nasabah.edit', compact('nasabah', 'user'));
-    }
-
-
-    public function update(Request $request, $id)
-    {
-        // Validate request
-        $this->validate($request, [
-            'nama' => 'required',
-            'email' => 'required|email',
-            // Add other validations as needed
-        ]);
-
-        DB::beginTransaction();
-
-        try {
-            // Update user
-            User::where('id', $id)->update([
-                'name' => $request->nama,
-                'email' => $request->email,
-                // Update other fields as needed
-            ]);
-
-            // Update nasabah
-            DB::table('_anggota')->where('user_id', $id)->update([
-                'name' => $request->nama,
-                'telphone' => $request->telphone,
-                'nip' => $request->nip,
-                'agama' => $request->agama,
-                'jenis_kelamin' => $request->jenis_kelamin,
-                'tgl_lahir' => $request->tgl_lahir,
-                'pekerjaan' => $request->pekerjaan,
-                'alamat' => $request->alamat,
-                // Update other fields as needed
-            ]);
-
-            // Handle image update
+            // Handle gambar
+            $imageName = null;
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $imageName = time().'.'.$image->getClientOriginalExtension();
                 $image->move(public_path('assets/backend/img'), $imageName);
-
-                // Update image field
-                DB::table('_anggota')->where('user_id', $id)->update([
-                    'image' => $imageName,
-                ]);
             }
+
+            // Buat user baru
+            $user = User::create([
+                'name'      => $request->name,
+                'email'     => $request->email,
+                'password'  => Hash::make($request->password),
+                'image'     => $imageName,
+            ]);
+
+            // Buat anggota (nasabah)
+            Anggota::create([
+                'user_id'        => $user->id,
+                'name'           => $request->name,
+                'nip'            => $request->nip,
+                'telphone'       => $request->telphone,
+                'agama'          => $request->agama,
+                'jenis_kelamin'  => $request->jenis_kelamin,
+                'tgl_lahir'      => $request->tgl_lahir,
+                'pekerjaan'      => $request->pekerjaan,
+                'alamat'         => $request->alamat,
+                'image'          => $imageName,
+                'status_anggota' => 0, // default non-aktif, bisa ganti ke 1 jika mau langsung aktif
+                'saldo'          => 0,
+                'created_by'     => Auth::id(),
+                'updated_by'     => Auth::id(),
+            ]);
 
             DB::commit();
-
-            return redirect()->route('nasabah')->with('message', 'Data Nasabah Berhasil Diupdate');
+            return redirect()->route('nasabah.index')->with('message', 'Data Nasabah berhasil disimpan!');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('nasabah')->with('error', 'Gagal mengupdate data: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Gagal menyimpan data: '.$e->getMessage());
         }
     }
+
+    // Tampilkan detail nasabah
     public function show($id)
     {
+        $anggota = Anggota::with('user')->findOrFail($id);
+        return view('backend.nasabah.show', compact('anggota'));
+    }
+
+    // Tampilkan form edit
+    public function edit($id)
+    {
+        $nasabah = Anggota::with('user')->findOrFail($id);
+        return view('backend.nasabah.edit', [
+            'nasabah' => $nasabah,
+            'user'    => $nasabah->user,
+        ]);
+    }
+
+    // Proses update data nasabah
+    public function update(NasabahRequest $request, $id)
+    {
+        DB::beginTransaction();
         try {
-            $anggota = DB::table('_anggota')
-            ->select(
-                'id',
-                'user_id',
-                'nip',
-                'name',
-                'telphone',
-                'agama',
-                'jenis_kelamin',
-                'tgl_lahir',
-                'pekerjaan',
-                'alamat',
-                'image',
-                'status_anggota',
-                'saldo',
-                'tgl_gabung',
-                'created_by',
-                'updated_by',
-                'created_at',
-                'updated_at'
-            )
-                ->where('id', $id)
-                ->first();
+            $anggota = Anggota::findOrFail($id);
+            $user = $anggota->user;
 
-            if (!$anggota) {
-                return redirect()->route('nasabah')->with('error', 'Anggota tidak ditemukan.');
+            // Update data User
+            $user->name  = $request->name;
+            $user->email = $request->email;
+            if ($request->password) {
+                $user->password = Hash::make($request->password);
             }
+            // Handle update foto user jika ada
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time().'.'.$image->getClientOriginalExtension();
+                $image->move(public_path('assets/backend/img'), $imageName);
+                $user->image = $imageName;
+                $anggota->image = $imageName;
+            }
+            $user->save();
 
-            return view('backend.nasabah.show', compact('anggota'));
+            // Update data Anggota
+            $anggota->update([
+    'name'           => $request->name,
+    'nip'            => $request->nip,
+    'telphone'       => $request->telphone,
+    'agama'          => $request->agama,
+    'jenis_kelamin'  => $request->jenis_kelamin,
+    'tgl_lahir'      => $request->tgl_lahir,
+    'pekerjaan'      => $request->pekerjaan,
+    'alamat'         => $request->alamat,
+    'status_anggota' => $request->status_anggota, // tambahkan ini
+    'updated_by'     => Auth::id(),
+]);
+
+
+            DB::commit();
+            return redirect()->route('nasabah.index')->with('message', 'Data Nasabah berhasil diupdate!');
         } catch (\Exception $e) {
-            return redirect()->route('nasabah')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            DB::rollback();
+            return back()->withInput()->with('error', 'Gagal mengupdate data: '.$e->getMessage());
         }
     }
+
+    // Hapus nasabah
     public function destroy($id)
     {
+        DB::beginTransaction();
         try {
-            // Delete the user and related nasabah data
-            DB::table('users')->where('id', $id)->delete();
-            DB::table('_anggota')->where('user_id', $id)->delete();
-
-            return redirect()->route('nasabah')->with('message', 'Data Nasabah Berhasil Dihapus');
+            $anggota = Anggota::findOrFail($id);
+            // Hapus user sekalian
+            $user = $anggota->user;
+            $anggota->delete();
+            if ($user) {
+                $user->delete();
+            }
+            DB::commit();
+            return redirect()->route('nasabah.index')->with('message', 'Data Nasabah berhasil dihapus!');
         } catch (\Exception $e) {
-            return redirect()->route('nasabah')->with('error', 'Gagal menghapus data: ' . $e->getMessage())->withErrors($e->getMessage());
+            DB::rollback();
+            return back()->with('error', 'Gagal menghapus data: '.$e->getMessage());
         }
     }
 }

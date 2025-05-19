@@ -102,80 +102,93 @@
         }
     </style>
 </head>
-
 <body>
-    <div>
-        <header>
-            <table width="100%">
-                <tr>
-                    <td width="15%" align="center"><img src="https://pasla.jambiprov.go.id/wp-content/uploads/2023/02/lambang-koperasi.png" width="90%"></td>
-                    <td width="70%" align="center">
-                        <h3>LAPORAN PINJAMAN</h1>
-                            <h4>KOPERASI SIMPAN PINJAM "OPEN SOURCE"</h1>
-                                <p class="alamatlogo">Jl. A Yani No. 1 A Tambak Rejo, Wonodadi, Kec. Pringsewu</p>
-                                <p class="kodeposlogo">Pringsewu, Lampung 35372</p>
-                    </td>
-                    <td width="15%" align="center"><img src="https://kopkarindu.wordpress.com/wp-content/uploads/2014/05/koperasi-logo-baru-indonesia-vector.jpg" width="90%"></td>
-                </tr>
-            </table>
-            <hr class="garis1">
-        </header><br>
-        <div id="laporan-title">
-            <h4>Laporan Pinjaman</h4>
-            <p>Periode: {{ tanggal_indonesia($startDate, false) }} - {{ tanggal_indonesia($endDate, false) }}</p>
-        </div>
+    <header>
+        <table width="100%">
+            <tr>
+                <td width="15%" align="center">
+                    <img src="https://pasla.jambiprov.go.id/wp-content/uploads/2023/02/lambang-koperasi.png" width="90%">
+                </td>
+                <td width="70%" align="center">
+                    <h3>LAPORAN PINJAMAN</h3>
+                    <h4>KOPERASI SIMPAN PINJAM "OPEN SOURCE"</h4>
+                    <p class="alamatlogo">Jl. A Yani No. 1 A Tambak Rejo, Wonodadi, Kec. Pringsewu</p>
+                    <p class="kodeposlogo">Pringsewu, Lampung 35372</p>
+                </td>
+                <td width="15%" align="center">
+                    <img src="https://kopkarindu.wordpress.com/wp-content/uploads/2014/05/koperasi-logo-baru-indonesia-vector.jpg" width="90%">
+                </td>
+            </tr>
+        </table>
+        <hr class="garis1">
+    </header>
+
+    <div id="laporan-title">
+        <h4>Laporan Pinjaman</h4>
+        <p>Periode: {{ tanggal_indonesia($startDate, false) }} – {{ tanggal_indonesia($endDate, false) }}</p>
+    </div>
+
+    <div class="table-container">
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Tanggal</th>
                     <th>Nasabah</th>
                     <th>Kode Pinjam</th>
-                    <th>Jumalah Pinjam</th>
-                    <th>Lama/Bulan</th>
+                    <th>Jumlah Pinjam</th>
+                    <th>Lama (Bulan)</th>
                     <th>Bunga</th>
                     <th>Status</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($pinjaman as $pinjam)
+                @forelse($pinjaman as $pinjam)
                 <tr>
                     <td>{{ tanggal_indonesia($pinjam->tanggal_pinjam, false) }}</td>
                     <td>{{ $pinjam->anggota_name }}</td>
-                    <td>{{ $pinjam->kodeTransaksiPinjaman }}</td>
-                    <td>Rp {{ number_format($pinjam->jml_pinjam, 2, ',', '.') }}</td>
-                    <td>{{ $pinjam->jml_cicilan }} Bulan</td>
-                    <td>{{ $pinjam->bunga_pinjam }} %</td>
-
+                    <td>{{ $pinjam->kode_transaksi }}</td>
+                    <td>Rp {{ number_format($pinjam->jumlah_pinjam, 2, ',', '.') }}</td>
+                    <td>{{ $pinjam->tenor }} Bulan</td>
+                    <td>{{ $pinjam->bunga }} %</td>
                     <td>
-                        @if ($pinjam->status_pengajuan == 0)
-                        <span class="text-primary">Dibuat</span>
-                        @elseif ($pinjam->status_pengajuan == 1)
-                        <span class="text-success">Disetujui</span>
-                        @elseif ($pinjam->status_pengajuan == 3)
-                        <span class="text-info">Selesai</span>
-                        @else
-                        <span class="text-danger">Ditolak</span>
-                        @endif
+                        @switch($pinjam->status)
+                            @case('PENDING')
+                                <span class="text-primary">Dibuat</span>
+                                @break
+                            @case('DISETUJUI')
+                                <span class="text-success">Disetujui</span>
+                                @break
+                            @case('DITOLAK')
+                                <span class="text-danger">Ditolak</span>
+                                @break
+                            @case('SELESAI')
+                                <span class="text-info">Selesai</span>
+                                @break
+                            @default
+                                {{ $pinjam->status }}
+                        @endswitch
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="7" class="text-center">Tidak Ada Data Pinjaman</td>
+                </tr>
+                @endforelse
             </tbody>
-        </table><br>
+        </table>
+    </div>
+
+    <footer>
         <table width="100%">
             <tr>
-                <td width="15%" align="center"><img src="" width="90%"></td>
-                <td width="55%" align="center"><img src="" width="90%"></td>
+                <td width="60%"></td>
                 <td width="40%" align="center">
-
                     <p class="alamatlogo">Pringsewu, {{ tanggal_indonesia(\Carbon\Carbon::now(), false) }}</p>
-                    <p class="kodeposlogo">Kepala Koperasi</p>
-                    <br><br><br>
-                    <p class="kodeposlogo">{{ auth()->user()->name}}</p>
-
+                    <p class="kodeposlogo">Kepala Koperasi</p><br><br><br>
+                    <p class="kodeposlogo">{{ auth()->user()->name }}</p>
                 </td>
             </tr>
         </table>
-    </div>
+    </footer>
 </body>
-
 </html>

@@ -4,6 +4,7 @@ use App\Http\Controllers\NasabahController;
 use App\Http\Controllers\RoleAndPermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AngsuranController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -14,7 +15,7 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
     //home
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home'); 
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/chart-data', [App\Http\Controllers\HomeController::class, 'chartData'])->name('chart.data');
     //user
     Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('user');
@@ -27,24 +28,11 @@ Route::middleware('auth')->group(function () {
 
 
     //nasabah
-    Route::get('/nasabah', [\App\Http\Controllers\NasabahController::class, 'index'])->name('nasabah');
-    Route::get('/addnasabah', [\App\Http\Controllers\NasabahController::class, 'create'])->name('createNasabah');
-    Route::post('/addnasabah', [\App\Http\Controllers\NasabahController::class, 'store'])->name('storeNasabah');
-    Route::get('/editnasabah/{id}',  [\App\Http\Controllers\NasabahController::class, 'edit'])->name('nasabah.edit');
-    Route::put('/updatenasabah/{id}',  [\App\Http\Controllers\NasabahController::class, 'update'])->name('nasabah.update');
-    Route::delete('/nasabah/{id}', [\App\Http\Controllers\NasabahController::class, 'destroy'])->name('nasabah.destroy');
-    Route::get('/detail_nasabah/{id}', [\App\Http\Controllers\NasabahController::class, 'show'])->name('nasabah.show');
+    Route::resource('nasabah', \App\Http\Controllers\NasabahController::class);
 
     //simpanan
-    Route::get('/simpanan', [\App\Http\Controllers\SimpananController::class, 'index'])->name('simpanan');
-    Route::get('/simpanan/create', [\App\Http\Controllers\SimpananController::class, 'create'])->name('simpanan.create');
-    Route::post('/simpanan/store', [\App\Http\Controllers\SimpananController::class, 'store'])->name('simpanan.store');
-    Route::get('/detail_simpanan/{id}', [\App\Http\Controllers\SimpananController::class, 'show'])->name('simpanan.show');
-    Route::get('/editsimpanan/{id}/edit', [\App\Http\Controllers\SimpananController::class, 'edit'])->name('simpanan.edit');
-    Route::put('/updatesimpanan/{id}', [\App\Http\Controllers\SimpananController::class, 'update'])->name('simpanan.update');
-    Route::delete('/simpanan/{id}', [\App\Http\Controllers\SimpananController::class, 'destroy'])->name('simpanan.destroy');
-    
-    
+    Route::resource('simpanan', \App\Http\Controllers\SimpananController::class);
+
     //pinjaman
     Route::get('/pinjaman', [\App\Http\Controllers\PinjamanController::class, 'index'])->name('pinjaman');
     Route::get('/pinjaman/create', [\App\Http\Controllers\PinjamanController::class, 'create'])->name('pinjaman.create');
@@ -52,12 +40,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/detail_pinjaman/{id}', [\App\Http\Controllers\PinjamanController::class, 'show'])->name('pinjaman.show');
     // Route::get('/editpinjaman/{id}/edit', [\App\Http\Controllers\PinjamanController::class, 'edit'])->name('pinjaman.edit');
     Route::put('/pinjaman/{id}', [\App\Http\Controllers\PinjamanController::class, 'update'])->name('pinjaman.update');
-
     Route::delete('/pinjaman/{id}', [\App\Http\Controllers\PinjamanController::class, 'destroy'])->name('pinjaman.destroy');
-    Route::get('/terima_pengajuan/{id}', [\App\Http\Controllers\PinjamanController::class, 'terimapengajuan'])->name('terima_pengajuan');
-    Route::post('/tolak_pengajuan/{id}', [\App\Http\Controllers\PinjamanController::class, 'tolakPengajuan'])->name('tolak_pengajuan');
-    Route::get('angsuran/{id}', [\App\Http\Controllers\PinjamanController::class, 'showAngsuran'])->name('angsuran.show');
-    
+    Route::get('/terima_pengajuan/{id}', [\App\Http\Controllers\PinjamanController::class, 'terima'])->name('terima_pengajuan');
+    Route::post('/tolak_pengajuan/{id}', [\App\Http\Controllers\PinjamanController::class, 'tolak'])->name('tolak_pengajuan');
+
     //laporan
     Route::get('/simpanan/cetak', [\App\Http\Controllers\SimpananController::class, 'cetak'])->name('simpanan.cetak');
     Route::get('/pinjaman/cetak', [\App\Http\Controllers\LaporanController::class, 'laporanPinjaman'])->name('pinjaman.cetak');
@@ -69,23 +55,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporanSimpanan', [\App\Http\Controllers\LaporanController::class, 'indexSimpanan'])->name('laporanSimpanan');
     Route::get('/laporanPinjaman', [\App\Http\Controllers\LaporanController::class, 'indexPinjaman'])->name('laporanPinjaman');
 
-
-
-
-    
     //angsuran
-    Route::post('/pinjaman/{pinjaman_id}/angsuran', [\App\Http\Controllers\AngsuranController::class, 'bayarAngsuran'])->name('angsuran.bayar');
-    // routes/web.php
-    Route::put('/angsuran/{id}', [\App\Http\Controllers\AngsuranController::class, 'update'])->name('angsuran.update');
+    Route::resource('angsuran', AngsuranController::class);
+    Route::post('/pinjaman/{pinjaman}/angsuran', [App\Http\Controllers\AngsuranController::class, 'store'])->name('angsuran.bayar');
+    Route::get('/angsuran/{id}/cetak', [App\Http\Controllers\AngsuranController::class, 'cetak'])->name('angsuran.cetak');
+// NEW: Detail AJAX (for modal show)
+Route::get('/penarikan/show/{id}', [\App\Http\Controllers\PenarikanController::class, 'showAjax'])->name('penarikan.showAjax');
 
-    //angsuran
-    Route::get('/angsuran', [\App\Http\Controllers\AngsuranController::class, 'index'])->name('angsuran');
-    Route::get('/angsuran/create', [\App\Http\Controllers\AngsuranController::class, 'create'])->name('angsuran.create');
-    Route::post('/angsuran/store', [\App\Http\Controllers\AngsuranController::class, 'store'])->name('angsuran.store');
-    Route::get('/editangsuran/{id}/edit', [\App\Http\Controllers\AngsuranController::class, 'edit'])->name('angsuran.edit');
-    // Route::put('/updateangsuran/{id}', [\App\Http\Controllers\AngsuranController::class, 'update'])->name('angsuran.update');
-    Route::get('/angsuran/cetak', [\App\Http\Controllers\AngsuranController::class, 'cetak'])->name('angsuran.cetak');
-    Route::delete('/angsuran/{id}', [\App\Http\Controllers\AngsuranController::class, 'destroy'])->name('angsuran.destroy');
+// NEW: Export Excel
+Route::get('/penarikan/excel', [\App\Http\Controllers\PenarikanController::class, 'exportExcel'])->name('penarikan.excel');
+
+// NEW: Riwayat audit log/history
+Route::get('/penarikan/{id}/history', [\App\Http\Controllers\PenarikanController::class, 'history'])->name('penarikan.history');
 
 
     //penarikan
@@ -102,9 +83,10 @@ Route::middleware('auth')->group(function () {
     // Route::delete('/pinjaman/{id}', [\App\Http\Controllers\PinjamanController::class, 'destroyAngsuran'])->name('angsuran.destroy');
     // Route::delete('/angsuran/{id}', [\App\Http\Controllers\AngsuranController::class, 'destroyAngsuran'])->name('angsuran.destroy');
 
-  
+
     //role&permission
-    Route::get('show-roles', [RoleAndPermissionController::class, 'show']);
+    Route::get('show-roles', [RoleAndPermissionController::class, 'show'])
+        ->name('show-roles');
     Route::get('create-roles', [RoleAndPermissionController::class, 'createRole']);
     Route::post('add-role', [RoleAndPermissionController::class, 'create']);
     Route::get('edit-role/{id}', [RoleAndPermissionController::class, 'editRole']);

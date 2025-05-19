@@ -1,23 +1,22 @@
 @extends('backend.app')
+
 @section('title', 'Tambah Role')
+
 @section('head')
 <style>
     .table {
         width: 50%;
         border-collapse: collapse;
     }
-
     .table th,
     .table td {
         border: 1px solid #ddd;
         padding: 8px;
         text-align: left;
     }
-
     .table th {
         background-color: #f2f2f2;
     }
-
     .table tr:nth-child(even) {
         background-color: #f2f2f2;
     }
@@ -28,7 +27,6 @@
         cursor: pointer;
         display: inline-block;
     }
-
     .styled-checkbox input {
         position: absolute;
         opacity: 0;
@@ -36,7 +34,6 @@
         height: 0;
         width: 0;
     }
-
     .checkmark {
         position: absolute;
         top: 0;
@@ -46,8 +43,7 @@
         background-color: #eee;
         border: 1px solid #ccc;
     }
-
-    .styled-checkbox input:checked+.checkmark:after {
+    .styled-checkbox input:checked + .checkmark:after {
         content: "";
         position: absolute;
         display: block;
@@ -65,32 +61,39 @@
 @section('content')
 <div class="card">
     <div class="card-header">
-        <h1>{{ __('Create New Role') }}</h1>
+        <h1>Buat Role Baru</h1>
     </div>
     <div class="card-body">
-        <form method="POST" action="{{ URL('add-role') }}">
+        <form method="POST" action="{{ route('roles.store') }}">
             @csrf
-            <label for="name">{{ __('Role Name') }}</label>
-            <input type="text" required name="name" class="form-control" />
 
+            <div class="mb-3">
+                <label for="name" class="form-label">Nama Role</label>
+                <input type="text" id="name" name="name" class="form-control" required>
+            </div>
 
             <div class="row">
                 <div class="col-md-6">
-                    <h1>{{ __('Permissions') }}</h1>
+                    <h3>Permissions</h3>
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>{{ __('Name') }}</th>
-                                <th>{{ __('Permission') }}</th>
+                                <th>Nama</th>
+                                <th>Pilih</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($permissions as $permission)
+                            @foreach($permissions as $permission)
                             <tr>
                                 <td>{{ $permission->name }}</td>
                                 <td class="styled-checkbox">
-                                    <input type="checkbox" value="{{ $permission->name }}" name="permission[]" id="permission_{{ $permission->id }}" />
-                                    <label class="checkmark" for="permission_{{ $permission->id }}"></label>
+                                    <input
+                                        type="checkbox"
+                                        id="permission_{{ $permission->id }}"
+                                        name="permissions[]"
+                                        value="{{ $permission->name }}"
+                                    >
+                                    <label for="permission_{{ $permission->id }}" class="checkmark"></label>
                                 </td>
                             </tr>
                             @endforeach
@@ -98,20 +101,25 @@
                     </table>
                 </div>
 
-
                 <div class="col-md-6">
-                    <h1>{{ __('Users') }}</h1>
-
-                    <label for="users">{{ __('Users') }}</label>
-                    <select class="form-control" name="users[]" id="users" multiple>
-                        @foreach ($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                        @endforeach
-                    </select>
+                    <h3>Users</h3>
+                    <div class="mb-3">
+                        <label for="users" class="form-label">Pilih User</label>
+                        <select
+                            id="users"
+                            name="users[]"
+                            class="form-control"
+                            multiple
+                        >
+                            @foreach($users as $user)
+                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <input type="submit" class="btn btn-success" value="{{ __('Save') }}" />
+            <button type="submit" class="btn btn-success">Simpan</button>
         </form>
     </div>
 </div>
