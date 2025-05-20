@@ -17,17 +17,17 @@ class PermissionTableSeeder extends Seeder
             'penarikan-list', 'penarikan-create', 'penarikan-edit', 'penarikan-delete',
             'pinjaman-list', 'pinjaman-create', 'pinjaman-detail', 'pinjaman-edit', 'pinjaman-delete',
             'laporan_list', 'laporan_simpanan', 'laporan_pinjaman', 'laporan_angsuran', 'laporan_penarikan',
-            'angsuran-create', 'angsuran-edit', 'angsuran-delete',
+            'angsuran-list', 'angsuran-create', 'angsuran-edit', 'angsuran-delete',
             'approve_penarikan', 'approve_pinjaman', 'tolak_penarikan', 'tolak_pinjaman',
-            'angsuran-list',
-    'angsuran-create', 'angsuran-edit', 'angsuran-delete',
-    'approve_penarikan', 'approve_pinjaman', 'tolak_penarikan', 'tolak_pinjaman',
+            // TAMBAHKAN INI!
+            'audit-log-list',
         ];
 
         foreach ($permissions as $permission) {
-            Permission::firstOrCreate(
-                ['name'       => $permission, 'guard_name' => 'web']
-            );
+            Permission::firstOrCreate([
+                'name'       => $permission,
+                'guard_name' => 'web'
+            ]);
         }
     }
 }

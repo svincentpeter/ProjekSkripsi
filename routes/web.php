@@ -5,6 +5,7 @@ use App\Http\Controllers\RoleAndPermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AngsuranController;
+use App\Http\Controllers\AuditLogController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -77,6 +78,9 @@ Route::get('/penarikan/{id}/history', [\App\Http\Controllers\PenarikanController
     Route::put('/penarikan/{id}', [\App\Http\Controllers\PenarikanController::class, 'update'])->name('penarikan.update');
     Route::delete('/penarikan/{id}', [\App\Http\Controllers\PenarikanController::class, 'destroy'])->name('penarikan.destroy');
 
+Route::get('/audit-log', [AuditLogController::class, 'index'])
+    ->middleware('permission:audit-log-list')
+    ->name('auditlog.index');
 
 
 
@@ -85,13 +89,12 @@ Route::get('/penarikan/{id}/history', [\App\Http\Controllers\PenarikanController
 
 
     //role&permission
-    Route::get('show-roles', [RoleAndPermissionController::class, 'show'])
-        ->name('show-roles');
-    Route::get('create-roles', [RoleAndPermissionController::class, 'createRole']);
-    Route::post('add-role', [RoleAndPermissionController::class, 'create']);
-    Route::get('edit-role/{id}', [RoleAndPermissionController::class, 'editRole']);
-    Route::post('update-role', [RoleAndPermissionController::class, 'updateRole']);
-    Route::get('delete-role/{id}', [RoleAndPermissionController::class, 'delete']);
+    Route::get('/roles', [RoleAndPermissionController::class, 'show'])->name('roles.index');
+Route::get('/roles/create', [RoleAndPermissionController::class, 'createRole'])->name('roles.create');
+Route::post('/roles', [RoleAndPermissionController::class, 'create'])->name('roles.store');
+Route::get('/roles/{id}/edit', [RoleAndPermissionController::class, 'editRole'])->name('roles.edit');
+Route::put('/roles/{id}', [RoleAndPermissionController::class, 'updateRole'])->name('roles.update');
+Route::delete('/roles/{id}', [RoleAndPermissionController::class, 'delete'])->name('roles.destroy');
 });
 
 Auth::routes();

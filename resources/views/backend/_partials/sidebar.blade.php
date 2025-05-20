@@ -65,10 +65,15 @@
             </div>
             @endcan
             @can('role-list')
-            <a href="{{ URL('show-roles') }}" class="nav-item nav-link {{ (request()->is('show-roles*')) ? 'active' : '' }}">
-                <i class="fa fa-user-shield me-2"></i>Role
-            </a>
-            @endcan
+<a href="{{ route('roles.index') }}" class="nav-item nav-link {{ (request()->is('roles*')) ? 'active' : '' }}">
+    <i class="fa fa-user-shield me-2"></i>Role
+</a>
+@endcan
+            @can('audit-log-list')
+<a href="{{ route('auditlog.index') }}" class="nav-item nav-link {{ (request()->is('audit-log*')) ? 'active' : '' }}">
+    <i class="fas fa-clipboard-list me-2"></i>Audit Log
+</a>
+@endcan
         </div>
     </nav>
 </div>

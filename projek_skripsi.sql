@@ -1,13 +1,9 @@
-Oke karena tadi sudah untuk bagian User sekarang lakukan hal sama ke bagian RolesAndPermissions, balik ke analisa dengan prompt ini :
-Disini saya ingin anda berperan sebagai ahli backend dan frontend yang menguasai framework laravel. Disini dihadapkan sebuah projek yang ingin semua hal nya dicek agar semua crud / semua sistem tiap halaman itu dapat berfungsi dengan benar semuanya dan dapat digunakan semuanya.
-
-Pertama disini saya akan memberikan Database yang sudah saya migrasi full :
 -- phpMyAdmin SQL Dump
 -- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 19, 2025 at 07:47 PM
+-- Generation Time: May 20, 2025 at 02:14 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.2.26
 
@@ -120,7 +116,7 @@ CREATE TABLE `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('spatie.permission.cache', 'a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:37:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:9:\"user-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:9:\"role-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:11:\"role-create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:3;a:4:{s:1:\"a\";i:4;s:1:\"b\";s:9:\"role-edit\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:11:\"role-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:5;a:4:{s:1:\"a\";i:6;s:1:\"b\";s:12:\"nasabah-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:14:\"nasabah-create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:7;a:4:{s:1:\"a\";i:8;s:1:\"b\";s:14:\"nasabah-detail\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:8;a:4:{s:1:\"a\";i:9;s:1:\"b\";s:12:\"nasabah-edit\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:9;a:4:{s:1:\"a\";i:10;s:1:\"b\";s:14:\"nasabah-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:10;a:4:{s:1:\"a\";i:11;s:1:\"b\";s:13:\"simpanan-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:11;a:4:{s:1:\"a\";i:12;s:1:\"b\";s:15:\"simpanan-create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:12;a:4:{s:1:\"a\";i:13;s:1:\"b\";s:15:\"simpanan-detail\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:13;a:4:{s:1:\"a\";i:14;s:1:\"b\";s:13:\"simpanan-edit\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:14;a:4:{s:1:\"a\";i:15;s:1:\"b\";s:15:\"simpanan-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:15;a:4:{s:1:\"a\";i:16;s:1:\"b\";s:14:\"penarikan-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:16;a:4:{s:1:\"a\";i:17;s:1:\"b\";s:16:\"penarikan-create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:17;a:4:{s:1:\"a\";i:18;s:1:\"b\";s:14:\"penarikan-edit\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:18;a:4:{s:1:\"a\";i:19;s:1:\"b\";s:16:\"penarikan-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:19;a:4:{s:1:\"a\";i:20;s:1:\"b\";s:13:\"pinjaman-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:20;a:4:{s:1:\"a\";i:21;s:1:\"b\";s:15:\"pinjaman-create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:21;a:4:{s:1:\"a\";i:22;s:1:\"b\";s:15:\"pinjaman-detail\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:22;a:4:{s:1:\"a\";i:23;s:1:\"b\";s:13:\"pinjaman-edit\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:23;a:4:{s:1:\"a\";i:24;s:1:\"b\";s:15:\"pinjaman-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:24;a:4:{s:1:\"a\";i:25;s:1:\"b\";s:12:\"laporan_list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:25;a:4:{s:1:\"a\";i:26;s:1:\"b\";s:16:\"laporan_simpanan\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:26;a:4:{s:1:\"a\";i:27;s:1:\"b\";s:16:\"laporan_pinjaman\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:27;a:4:{s:1:\"a\";i:28;s:1:\"b\";s:16:\"laporan_angsuran\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:28;a:4:{s:1:\"a\";i:29;s:1:\"b\";s:17:\"laporan_penarikan\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:29;a:4:{s:1:\"a\";i:30;s:1:\"b\";s:15:\"angsuran-create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:30;a:4:{s:1:\"a\";i:31;s:1:\"b\";s:13:\"angsuran-edit\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:31;a:4:{s:1:\"a\";i:32;s:1:\"b\";s:15:\"angsuran-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:32;a:4:{s:1:\"a\";i:33;s:1:\"b\";s:17:\"approve_penarikan\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:33;a:4:{s:1:\"a\";i:34;s:1:\"b\";s:16:\"approve_pinjaman\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:34;a:4:{s:1:\"a\";i:35;s:1:\"b\";s:15:\"tolak_penarikan\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:35;a:4:{s:1:\"a\";i:36;s:1:\"b\";s:14:\"tolak_pinjaman\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:36;a:4:{s:1:\"a\";i:37;s:1:\"b\";s:13:\"angsuran-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}}s:5:\"roles\";a:1:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"Admin\";s:1:\"c\";s:3:\"web\";}}}', 1747765791);
+('spatie.permission.cache', 'a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:38:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:9:\"user-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:9:\"role-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:11:\"role-create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:3;a:4:{s:1:\"a\";i:4;s:1:\"b\";s:9:\"role-edit\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:11:\"role-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:5;a:4:{s:1:\"a\";i:6;s:1:\"b\";s:12:\"nasabah-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:14:\"nasabah-create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:7;a:4:{s:1:\"a\";i:8;s:1:\"b\";s:14:\"nasabah-detail\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:8;a:4:{s:1:\"a\";i:9;s:1:\"b\";s:12:\"nasabah-edit\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:9;a:4:{s:1:\"a\";i:10;s:1:\"b\";s:14:\"nasabah-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:10;a:4:{s:1:\"a\";i:11;s:1:\"b\";s:13:\"simpanan-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:11;a:4:{s:1:\"a\";i:12;s:1:\"b\";s:15:\"simpanan-create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:12;a:4:{s:1:\"a\";i:13;s:1:\"b\";s:15:\"simpanan-detail\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:13;a:4:{s:1:\"a\";i:14;s:1:\"b\";s:13:\"simpanan-edit\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:14;a:4:{s:1:\"a\";i:15;s:1:\"b\";s:15:\"simpanan-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:15;a:4:{s:1:\"a\";i:16;s:1:\"b\";s:14:\"penarikan-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:16;a:4:{s:1:\"a\";i:17;s:1:\"b\";s:16:\"penarikan-create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:17;a:4:{s:1:\"a\";i:18;s:1:\"b\";s:14:\"penarikan-edit\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:18;a:4:{s:1:\"a\";i:19;s:1:\"b\";s:16:\"penarikan-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:19;a:4:{s:1:\"a\";i:20;s:1:\"b\";s:13:\"pinjaman-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:20;a:4:{s:1:\"a\";i:21;s:1:\"b\";s:15:\"pinjaman-create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:21;a:4:{s:1:\"a\";i:22;s:1:\"b\";s:15:\"pinjaman-detail\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:22;a:4:{s:1:\"a\";i:23;s:1:\"b\";s:13:\"pinjaman-edit\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:23;a:4:{s:1:\"a\";i:24;s:1:\"b\";s:15:\"pinjaman-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:24;a:4:{s:1:\"a\";i:25;s:1:\"b\";s:12:\"laporan_list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:25;a:4:{s:1:\"a\";i:26;s:1:\"b\";s:16:\"laporan_simpanan\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:26;a:4:{s:1:\"a\";i:27;s:1:\"b\";s:16:\"laporan_pinjaman\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:27;a:4:{s:1:\"a\";i:28;s:1:\"b\";s:16:\"laporan_angsuran\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:28;a:4:{s:1:\"a\";i:29;s:1:\"b\";s:17:\"laporan_penarikan\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:29;a:4:{s:1:\"a\";i:30;s:1:\"b\";s:15:\"angsuran-create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:30;a:4:{s:1:\"a\";i:31;s:1:\"b\";s:13:\"angsuran-edit\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:31;a:4:{s:1:\"a\";i:32;s:1:\"b\";s:15:\"angsuran-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:32;a:4:{s:1:\"a\";i:33;s:1:\"b\";s:17:\"approve_penarikan\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:33;a:4:{s:1:\"a\";i:34;s:1:\"b\";s:16:\"approve_pinjaman\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:34;a:4:{s:1:\"a\";i:35;s:1:\"b\";s:15:\"tolak_penarikan\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:35;a:4:{s:1:\"a\";i:36;s:1:\"b\";s:14:\"tolak_pinjaman\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:36;a:4:{s:1:\"a\";i:37;s:1:\"b\";s:13:\"angsuran-list\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:37;a:3:{s:1:\"a\";i:38;s:1:\"b\";s:14:\"audit-log-list\";s:1:\"c\";s:3:\"web\";}}s:5:\"roles\";a:1:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"Admin\";s:1:\"c\";s:3:\"web\";}}}', 1747793220);
 
 -- --------------------------------------------------------
 
@@ -241,7 +237,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (12, '2024_07_30_183154_create_riwayat_pinjaman_table', 1),
 (13, '2025_05_19_133540_add_user_id_to_anggota_table', 1),
 (14, '2025_05_19_162844_add_keterangan_ditolak_pengajuan_to_pinjaman_table', 2),
-(15, '2025_05_19_193546_create_audit_logs_table', 3);
+(15, '2025_05_19_193546_create_audit_logs_table', 3),
+(16, '2025_05_20_011707_add_deleted_at_to_users_table', 4),
+(17, '2025_05_20_011750_add_deleted_at_to_users_table', 5);
 
 -- --------------------------------------------------------
 
@@ -360,7 +358,8 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
 (34, 'approve_pinjaman', 'web', '2025-05-19 07:19:17', '2025-05-19 07:19:17'),
 (35, 'tolak_penarikan', 'web', '2025-05-19 07:19:17', '2025-05-19 07:19:17'),
 (36, 'tolak_pinjaman', 'web', '2025-05-19 07:19:17', '2025-05-19 07:19:17'),
-(37, 'angsuran-list', 'web', '2025-05-19 11:25:13', '2025-05-19 11:25:13');
+(37, 'angsuran-list', 'web', '2025-05-19 11:25:13', '2025-05-19 11:25:13'),
+(38, 'audit-log-list', 'web', '2025-05-19 17:42:01', '2025-05-19 17:42:01');
 
 -- --------------------------------------------------------
 
@@ -506,7 +505,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('KfamOCjjT9FKoAIpG3blSwHyjKoYzl3CQvbDFI2z', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiU0pNT094ZGZ2c3lNbmNDdjh2ZzZtRVIxeVA1NG90MVRPeTc4WVFNQiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjk6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9uYXNhYmFoIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjQ6ImF1dGgiO2E6MTp7czoyMToicGFzc3dvcmRfY29uZmlybWVkX2F0IjtpOjE3NDc2ODM2NTA7fX0=', 1747683692);
+('KfamOCjjT9FKoAIpG3blSwHyjKoYzl3CQvbDFI2z', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiU0pNT094ZGZ2c3lNbmNDdjh2ZzZtRVIxeVA1NG90MVRPeTc4WVFNQiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjk6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9uYXNhYmFoIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjQ6ImF1dGgiO2E6MTp7czoyMToicGFzc3dvcmRfY29uZmlybWVkX2F0IjtpOjE3NDc2ODM2NTA7fX0=', 1747683692),
+('yXXtB5k0tx9QnMvyXMCFjtChVjjzSkhvvxsvDvDW', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoieU5Qa1JITEFyRkNkbUtqY1B6VkNic0pJTkNoa3E1bGZvT1JVdUFWMiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9zaW1wYW5hbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7czo0OiJhdXRoIjthOjE6e3M6MjE6InBhc3N3b3JkX2NvbmZpcm1lZF9hdCI7aToxNzQ3NzAxNDczO319', 1747707037);
 
 -- --------------------------------------------------------
 
@@ -570,17 +570,18 @@ CREATE TABLE `users` (
   `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `image`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Administrator', 'admin@gmail.com', '2025-05-19 07:19:18', '$2y$12$SOZP2kRLTTt.YranrfmTaeGJwxyB0PNN8Rg9dZBpe0DQv2zu9L4m6', NULL, NULL, '2025-05-19 07:19:18', '2025-05-19 07:19:18'),
-(2, 'Sofyan Hadi', 'sofyanhadi197@gmail.com', '2025-05-19 07:19:18', '$2y$12$GyplEwkxJsDKDJGrGoaGV.K.OBxQEv9Rt8h2Lmodyu4cd6CA2agwK', NULL, NULL, '2025-05-19 07:19:18', '2025-05-19 07:19:18'),
-(3, 'Vincent Peter', 'peter@gmail.com', NULL, '$2y$12$QIj5ComFycuCR.tDiHTJkOjL47yN8KM7ti3Nz6n9HLxwNFIXiaN0C', NULL, NULL, '2025-05-19 07:20:15', '2025-05-19 07:20:15');
+INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `image`, `remember_token`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'Administrator', 'admin@gmail.com', '2025-05-19 07:19:18', '$2y$12$SOZP2kRLTTt.YranrfmTaeGJwxyB0PNN8Rg9dZBpe0DQv2zu9L4m6', NULL, NULL, '2025-05-19 07:19:18', '2025-05-19 07:19:18', NULL),
+(2, 'Sofyan Hadi', 'sofyanhadi197@gmail.com', '2025-05-19 07:19:18', '$2y$12$GyplEwkxJsDKDJGrGoaGV.K.OBxQEv9Rt8h2Lmodyu4cd6CA2agwK', NULL, NULL, '2025-05-19 07:19:18', '2025-05-19 07:19:18', NULL),
+(3, 'Vincent Peter', 'peter@gmail.com', NULL, '$2y$12$QIj5ComFycuCR.tDiHTJkOjL47yN8KM7ti3Nz6n9HLxwNFIXiaN0C', NULL, NULL, '2025-05-19 07:20:15', '2025-05-19 07:20:15', NULL);
 
 --
 -- Indexes for dumped tables
@@ -792,7 +793,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `jenis_simpanan`
 --
 ALTER TABLE `jenis_simpanan`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -804,7 +805,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `penarikan`
@@ -816,7 +817,7 @@ ALTER TABLE `penarikan`
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `pinjaman`
@@ -936,421 +937,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-
-Setelah itu, saya ingin anda berfokus dengan RoleAndPermissionController.php saya:
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
-
-class RoleAndPermissionController extends Controller
-{
-    public function show()
-    {
-        $roles = Role::orderBy('id', 'DESC')->paginate(5);
-        return view('backend.RolesAndPermissions.index', compact('roles'));
-    }
-
-    public function createRole()
-    {
-        $permissions = Permission::all();
-        $users       = User::select('name', 'id')->get();
-        return view('backend.RolesAndPermissions.CreateRoles', compact('permissions', 'users'));
-    }
-
-    public function create(Request $request)
-    {
-        $role = Role::create(['name' => $request->name]);
-        $role->syncPermissions($request->permission);
-        foreach ($request->users as $userId) {
-            User::find($userId)->assignRole($role->name);
-        }
-        return redirect()->route('show-roles');
-    }
-
-    public function editRole($id)
-    {
-        $role        = Role::with('permissions', 'users')->findOrFail($id);
-        $permissions = Permission::all();
-        $users       = User::select('name', 'id')->get();
-        return view('backend.RolesAndPermissions.EditRole', compact('role', 'permissions', 'users'));
-    }
-
-    public function updateRole(Request $request)
-    {
-        $role = Role::findOrFail($request->id);
-        $role->update(['name' => $request->name]);
-        $role->syncPermissions($request->permission);
-
-        // Re-assign roles to users
-        DB::table('model_has_roles')->where('role_id', $role->id)->delete();
-        foreach ($request->users as $userId) {
-            User::find($userId)->assignRole($role->name);
-        }
-
-        return redirect()->route('show-roles');
-    }
-
-    public function delete($id)
-    {
-        Role::destroy($id);
-        return redirect()->route('show-roles');
-    }
-}
-
-
-Anda harus memastikan semua CRUD sudah benar dan dapat digunakan ditiap file CRUD RolesAndPermissions yaitu berikut :
-
-1. RolesAndPermissions/CreateRoles.blade.php:
-@extends('backend.app')
-
-@section('title', 'Tambah Role')
-
-@section('head')
-<style>
-    .table {
-        width: 50%;
-        border-collapse: collapse;
-    }
-    .table th,
-    .table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
-    .table th {
-        background-color: #f2f2f2;
-    }
-    .table tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-
-    /* Style for checkboxes */
-    .styled-checkbox {
-        position: relative;
-        cursor: pointer;
-        display: inline-block;
-    }
-    .styled-checkbox input {
-        position: absolute;
-        opacity: 0;
-        cursor: pointer;
-        height: 0;
-        width: 0;
-    }
-    .checkmark {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 20px;
-        width: 20px;
-        background-color: #eee;
-        border: 1px solid #ccc;
-    }
-    .styled-checkbox input:checked + .checkmark:after {
-        content: "";
-        position: absolute;
-        display: block;
-        left: 6px;
-        top: 2px;
-        width: 6px;
-        height: 12px;
-        border: solid #333;
-        border-width: 0 2px 2px 0;
-        transform: rotate(45deg);
-    }
-</style>
-@endsection
-
-@section('content')
-<div class="card">
-    <div class="card-header">
-        <h1>Buat Role Baru</h1>
-    </div>
-    <div class="card-body">
-        <form method="POST" action="{{ route('roles.store') }}">
-            @csrf
-
-            <div class="mb-3">
-                <label for="name" class="form-label">Nama Role</label>
-                <input type="text" id="name" name="name" class="form-control" required>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <h3>Permissions</h3>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Nama</th>
-                                <th>Pilih</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($permissions as $permission)
-                            <tr>
-                                <td>{{ $permission->name }}</td>
-                                <td class="styled-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        id="permission_{{ $permission->id }}"
-                                        name="permissions[]"
-                                        value="{{ $permission->name }}"
-                                    >
-                                    <label for="permission_{{ $permission->id }}" class="checkmark"></label>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="col-md-6">
-                    <h3>Users</h3>
-                    <div class="mb-3">
-                        <label for="users" class="form-label">Pilih User</label>
-                        <select
-                            id="users"
-                            name="users[]"
-                            class="form-control"
-                            multiple
-                        >
-                            @foreach($users as $user)
-                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-success">Simpan</button>
-        </form>
-    </div>
-</div>
-@endsection
-
-
-2. RolesAndPermissions/EditRole.blade.php :
-@extends('backend.app')
-
-@section('title', 'Edit Role')
-
-@section('head')
-<style>
-    .table {
-        width: 50%;
-        border-collapse: collapse;
-    }
-    .table th,
-    .table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
-    .table th {
-        background-color: #f2f2f2;
-    }
-    .table tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-    /* Style for checkboxes */
-    .styled-checkbox {
-        position: relative;
-        cursor: pointer;
-        display: inline-block;
-    }
-    .styled-checkbox input {
-        position: absolute;
-        opacity: 0;
-        cursor: pointer;
-        height: 0;
-        width: 0;
-    }
-    .checkmark {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 20px;
-        width: 20px;
-        background-color: #eee;
-        border: 1px solid #ccc;
-    }
-    .styled-checkbox input:checked + .checkmark:after {
-        content: "";
-        position: absolute;
-        display: block;
-        left: 6px;
-        top: 2px;
-        width: 6px;
-        height: 12px;
-        border: solid #333;
-        border-width: 0 2px 2px 0;
-        transform: rotate(45deg);
-    }
-</style>
-@endsection
-
-@section('content')
-<div class="card">
-    <div class="card-header">
-        <h1>Edit Role</h1>
-    </div>
-    <div class="card-body">
-        <form method="POST" action="{{ route('roles.update', $role->id) }}">
-            @csrf
-            @method('PUT')
-
-            <div class="mb-3">
-                <label for="name" class="form-label">Nama Role</label>
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value="{{ old('name', $role->name) }}"
-                    class="form-control @error('name') is-invalid @enderror"
-                    required
-                >
-                @error('name')
-                <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <h3>Permissions</h3>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Nama</th>
-                                <th>Pilih</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($permissions as $permission)
-                            <tr>
-                                <td>{{ $permission->name }}</td>
-                                <td class="styled-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        id="permission_{{ $permission->id }}"
-                                        name="permissions[]"
-                                        value="{{ $permission->name }}"
-                                        {{ $role->permissions->contains('id', $permission->id) ? 'checked' : '' }}
-                                    >
-                                    <label for="permission_{{ $permission->id }}" class="checkmark"></label>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="col-md-6">
-                    <h3>Users</h3>
-                    <div class="mb-3">
-                        <label for="users" class="form-label">Pilih Users</label>
-                        <select
-                            id="users"
-                            name="users[]"
-                            class="form-control"
-                            multiple
-                        >
-                            @foreach($users as $user)
-                            <option
-                                value="{{ $user->id }}"
-                                {{ $role->users->contains('id', $user->id) ? 'selected' : '' }}
-                            >{{ $user->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-success">Simpan Perubahan</button>
-        </form>
-    </div>
-</div>
-@endsection
-
-3. RolesAndPermissions/index.blade.php :
-@extends('backend.app')
-@section('title', 'Roles and Permissions')
-
-@section('content')
-<div class="container-fluid pt-4 px-4">
-    <h6 class="mb-4">Roles and Permissions</h6>
-    <div class="row g-4">
-        <div class="col-12">
-            <div class="bg-light rounded h-100 p-4">
-                <div class="table-responsive">
-
-                    @if(Session::has('message'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <h5><i class="icon fas fa-check"></i> Sukses!</h5>
-                        {{ Session('message') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    @endif
-
-                    <div class="mb-3">
-                        <a href="{{ route('roles.create') }}"
-                           class="btn btn-outline-primary rounded-pill">
-                            {{ __('Create Role') }}
-                        </a>
-                    </div>
-
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php
-                                $rowNumber = ($roles->currentPage() - 1) * $roles->perPage() + 1;
-                            @endphp
-
-                            @foreach($roles as $role)
-                            <tr>
-                                <td>{{ $rowNumber++ }}</td>
-                                <td>{{ $role->name }}</td>
-                                <td class="d-flex gap-1">
-                                    <a href="{{ route('roles.edit', $role->id) }}"
-                                       class="btn btn-outline-warning btn-sm">
-                                        {{ __('Edit') }}
-                                    </a>
-
-                                    <form action="{{ route('roles.destroy', $role->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus role ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">
-                                            {{ __('Delete') }}
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-
-                    <div class="float-right">
-                        {{ $roles->links() }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@endsection
-
-
-
-oke, karena disini saya masih pemula untuk laravel. Saya minta tolong tulisan ulang tiap modifikasi tiap file secara lengkap 1 file nya. Dimulai dari yang anda sarankan dulu saja

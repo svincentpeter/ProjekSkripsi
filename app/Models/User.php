@@ -2,41 +2,24 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, Notifiable, HasRoles, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'name', 'email', 'password', 'image'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password', 'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -44,5 +27,19 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-   
+
+    // Relasi opsional: 1 User bisa punya 1 anggota (kalau ingin)
+    public function anggota()
+    {
+        return $this->hasOne(Anggota::class);
+    }
+
+    // Helper untuk gambar user (null-safe)
+    public function getImageUrlAttribute()
+    {
+        if ($this->image) {
+            return asset('assets/backend/img/' . $this->image);
+        }
+        return asset('assets/backend/img/default-user.png');
+    }
 }
